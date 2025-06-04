@@ -1,6 +1,9 @@
 .page-container { 
   font-family: 'Poppins', sans-serif;
   padding-top: 78px;
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
 }
 
 .main-content {
@@ -23,23 +26,28 @@
 }
 
 .card {
-  background-color: white;
-  border: 1px solid #e0e0e0;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--shadow);
   padding: 20px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .section-title,
 .item-rented-title {
   font-size: 20px;
   margin-top: 10px;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .section-subtitle {
   margin-top: 50px;
   margin-bottom: 20px;
   font-size: 18px;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .checkout-item-image img,
@@ -74,6 +82,8 @@
   font-size: 16px;
   margin-top: -170px;
   margin-left: 270px;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .item-details {
@@ -97,6 +107,12 @@
   margin-bottom: 80px;
 }
 
+.price-info p {
+  color: var(--text-primary);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
 .input-form {
   display: flex;
   flex-wrap: wrap;
@@ -106,8 +122,23 @@
 .input-form input {
   flex: 1 1 45%;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 2px solid var(--border-color);
   border-radius: 5px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 16px;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.input-form input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input-form input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
 }
 
 .summary-details {
@@ -121,11 +152,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .total {
   font-weight: bold;
   font-size: 18px;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .payment-options {
@@ -137,8 +172,28 @@
 
 .payment-option {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
+  padding: 12px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.payment-option:hover {
+  border-color: var(--accent-color);
+  background-color: var(--card-bg);
+}
+
+.payment-option input[type="radio"]:checked + div {
+  color: #5998F6;
+}
+
+.payment-option input[type="radio"] {
+  margin-top: 2px;
 }
 
 .primary-button {
@@ -160,8 +215,9 @@
 
 .rented-item {
   margin-bottom: 30px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 20px;
+  transition: border-color 0.3s ease;
 }
 
 .remove-button {
@@ -194,16 +250,24 @@
 }
 
 .modal-content {
+  background: var(--modal-bg);
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px var(--shadow);
+  max-width: 600px;
+  width: 90%;
   position: relative;
-  background: white;
-  gap: 20px;
-  padding: 30px 30px;
-  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.modal-content h2 {
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  width: fit-content;
-  height: fit-content;
-  max-width: 90%;
+  transition: color 0.3s ease;
 }
 
 .modal-buttons {
@@ -243,13 +307,13 @@
 .login-back-icon {
   width: 32px;
   height: 32px;
-  color: #111827;
+  color: var(--text-primary);
   transition: color 0.3s ease;
 }
 
 /* This targets the icon when the button is hovered */
 .login-back-button:hover .login-back-icon {
-  color: #3b82f6;
+  color: var(--accent-color);
 }
 
 /*Back button modal*/
@@ -264,11 +328,12 @@
   align-items: center;
   gap: 4px;
   z-index: 10;
-  color: black;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .back-button:hover {
-  color: #3b82f6;
+  color: var(--accent-color);
 }
 
 .back-icon {
@@ -295,12 +360,14 @@
 }
 
 .modal-details p {
+  color: var(--text-primary);
   margin: 8px 0;
-  font-size: 14px;
+  font-size: 16px;
+  transition: color 0.3s ease;
 }
 
 .modal-details strong {
-  color: #374151;
+  color: var(--accent-color);
   font-weight: 600;
 }
 

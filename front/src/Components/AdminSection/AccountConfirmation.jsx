@@ -10,6 +10,41 @@ const AccountConfirmation = () => {
   const [notification, setNotification] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Safe image component to prevent flickering
+  const SafeImage = ({ src, alt, className, placeholder = null }) => {
+    const [hasError, setHasError] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const handleError = () => {
+      setHasError(true);
+      setIsLoading(false);
+    };
+
+    const handleLoad = () => {
+      setIsLoading(false);
+    };
+
+    if (hasError || !src) {
+      return (
+        <div className={`${className} placeholder-image`}>
+          {placeholder || <div className="placeholder-content">👤</div>}
+        </div>
+      );
+    }
+
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        onError={handleError}
+        onLoad={handleLoad}
+        loading="lazy"
+        style={{ display: isLoading ? 'none' : 'block' }}
+      />
+    );
+  };
+
   useEffect(() => {
     const fetchPendingUsers = async () => {
       try {
@@ -121,13 +156,10 @@ const AccountConfirmation = () => {
             {users.map((user) => (
               <div className="account-row" key={user.id}>
                 <div className="account-name">
-                  <img 
+                  <SafeImage 
                     src={user.profilePic || '/placeholder-avatar.jpg'} 
                     alt="Profile" 
                     className="profile-pic"
-                    onError={(e) => {
-                      e.target.src = '/placeholder-avatar.jpg';
-                    }}
                   />
                   <span>{user.name}</span>
                 </div>
@@ -169,18 +201,12 @@ const AccountConfirmation = () => {
               {selectedUser.proof ? (
                 <div>
                   <p>Verification Document:</p>
-                  <img 
+                  <SafeImage 
                     src={selectedUser.proof} 
                     alt="Verification Document" 
                     className="proof-preview"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
-                    }}
+                    placeholder={<div className="placeholder-content">📄</div>}
                   />
-                  <div style={{ display: 'none', padding: '20px', textAlign: 'center', border: '1px solid #ddd' }}>
-                    Document could not be loaded
-                  </div>
                 </div>
               ) : (
                 <p style={{ color: '#666' }}>No verification document submitted.</p>

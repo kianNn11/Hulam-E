@@ -4,6 +4,7 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 import { Link, useNavigate } from 'react-router-dom';
 import TermsModal from "../PrivacyPolicy/TermsModal";
 import { useAuth } from "../../Context/AuthContext";
+import AlertMessage from "../Common/AlertMessage";
 
 const Register = () => {
   const { register } = useAuth();
@@ -18,9 +19,78 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState('');
-  const [errors, setErrors] = useState({});
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showTermsModal, setShowTermsModal] = useState(false);
+
+  const showAlert = (type, message) => {
+    setAlert({ show: true, type, message });
+    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 5000);
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return {
+      minLength: password.length >= 8,
+      hasUpperCase: /[A-Z]/.test(password),
+      hasLowerCase: /[a-z]/.test(password),
+      hasNumber: /\d/.test(password),
+      hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    
+    // Name validation
+    if (!formData.name.trim()) {
+      errors.name = 'Full name is required';
+    } else if (formData.name.trim().length < 2) {
+      errors.name = 'Name must be at least 2 characters long';
+    } else if (!/^[a-zA-Z\s]+$/.test(formData.name.trim())) {
+      errors.name = 'Name can only contain letters and spaces';
+    }
+    
+    // Email validation
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!validateEmail(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    
+    // Password validation
+    if (!formData.password) {
+      errors.password = 'Password is required';
+    } else {
+      const passwordChecks = validatePassword(formData.password);
+      if (!passwordChecks.minLength) {
+        errors.password = 'Password must be at least 8 characters long';
+      } else if (!passwordChecks.hasUpperCase || !passwordChecks.hasLowerCase) {
+        errors.password = 'Password must contain both uppercase and lowercase letters';
+      } else if (!passwordChecks.hasNumber) {
+        errors.password = 'Password must contain at least one number';
+      }
+    }
+    
+    // Password confirmation validation
+    if (!formData.password_confirmation) {
+      errors.password_confirmation = 'Please confirm your password';
+    } else if (formData.password !== formData.password_confirmation) {
+      errors.password_confirmation = 'Passwords do not match';
+    }
+    
+    // Terms validation
+    if (!formData.acceptTerms) {
+      errors.acceptTerms = 'You must accept the terms and conditions';
+    }
+    
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -34,66 +104,99 @@ const Register = () => {
     }));
     
     // Clear specific field error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: undefined }));
     }
-    // Clear general error message
-    if (errorMessage) {
-      setErrorMessage('');
+    // Clear general alert message
+    if (alert.show) {
+      setAlert({ show: false, type: '', message: '' });
+    }
+  };
+
+  const getErrorMessage = (error) => {
+    // Network errors
+    if (!error.response) {
+      return 'Network error. Please check your internet connection and try again.';
+    }
+
+    const status = error.response.status;
+    const data = error.response.data;
+
+    switch (status) {
+      case 422:
+        if (data.errors) {
+          // Handle specific validation errors
+          if (data.errors.email) {
+            return 'This email is already registered. Please use a different email or try logging in.';
+          }
+          if (data.errors.password) {
+            return Array.isArray(data.errors.password) ? data.errors.password[0] : data.errors.password;
+          }
+          // Get first error message
+          const firstError = Object.values(data.errors)[0];
+          return Array.isArray(firstError) ? firstError[0] : firstError;
+        }
+        return data.message || 'Please check your input and try again.';
+      case 429:
+        return 'Too many registration attempts. Please wait a moment and try again.';
+      case 500:
+        return 'Server error. Please try again later.';
+      case 503:
+        return 'Service temporarily unavailable. Please try again later.';
+      default:
+        return data.message || 'Registration failed. Please try again.';
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      showAlert('error', 'Please correct the errors below before submitting.');
+      return;
+    }
+
     setLoading(true);
-    setErrorMessage('');
-    setErrors({});
+    setAlert({ show: false, type: '', message: '' });
 
-    const { name, email, password, password_confirmation, acceptTerms } = formData;
-
-    // Client-side validation
-    if (!name.trim() || !email.trim() || !password || !password_confirmation) {
-      setErrorMessage("All fields must be completed before submitting the form.");
-      setLoading(false);
-      return;
-    }
-    
-    if (password !== password_confirmation) {
-      setErrorMessage("Passwords do not match.");
-      setLoading(false);
-      return;
-    }
-    
-    if (!acceptTerms) {
-      setErrorMessage("You must accept the terms and conditions to continue.");
-      setLoading(false);
-      return;
-    }
+    const { name, email, password, password_confirmation } = formData;
 
     try {
       const result = await register({
-        name,
-        email,
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
         password,
         password_confirmation
       });
 
       if (result.success) {
-        navigate('/rental-section');
+        showAlert('success', 'Registration successful! Redirecting...');
+        setTimeout(() => navigate('/rental-section'), 1500);
       } else {
         if (result.errors) {
-          setErrors(result.errors);
-          // Display first error as general message
-          const firstError = Object.values(result.errors)[0];
-          if (firstError && firstError[0]) {
-            setErrorMessage(firstError[0]);
+          // Handle backend validation errors
+          const backendErrors = {};
+          Object.keys(result.errors).forEach(key => {
+            const errorArray = result.errors[key];
+            backendErrors[key] = Array.isArray(errorArray) ? errorArray[0] : errorArray;
+          });
+          setFieldErrors(backendErrors);
+          
+          // Show specific error message
+          if (result.errors.email) {
+            showAlert('error', 'This email is already registered. Please use a different email or try logging in.');
+          } else {
+            const firstError = Object.values(result.errors)[0];
+            const errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+            showAlert('error', errorMessage);
           }
         } else {
-          setErrorMessage('Registration failed. Please try again.');
+          showAlert('error', 'Registration failed. Please try again.');
         }
       }
     } catch (err) {
-      setErrorMessage('An unexpected error occurred. Please try again.');
+      const errorMessage = getErrorMessage(err);
+      showAlert('error', errorMessage);
       console.error('Registration error:', err);
     } finally {
       setLoading(false);
@@ -102,8 +205,8 @@ const Register = () => {
 
   useEffect(() => {
     const handleClick = () => {
-      if (errorMessage) {
-        setErrorMessage('');
+      if (alert.show) {
+        setAlert({ show: false, type: '', message: '' });
       }
     };
 
@@ -112,7 +215,15 @@ const Register = () => {
     return () => {
       document.removeEventListener('click', handleClick);
     };
-  }, [errorMessage]);
+  }, [alert.show]);
+
+  const handleTermsAcceptance = () => {
+    setFormData({ ...formData, acceptTerms: true });
+    setShowTermsModal(false);
+    if (fieldErrors.acceptTerms) {
+      setFieldErrors(prev => ({ ...prev, acceptTerms: undefined }));
+    }
+  };
 
   return (
     <main className="register-page">
@@ -127,99 +238,119 @@ const Register = () => {
       <section className="register-form">
         <p className="register-title">Register</p>
 
+        {alert.show && (
+          <AlertMessage 
+            type={alert.type} 
+            message={alert.message} 
+            onClose={() => setAlert({ show: false, type: '', message: '' })}
+          />
+        )}
+
         <form onSubmit={handleSubmit}>
           <div className="register-formFields">
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Full Name"
-              className="register-username"
-              aria-label="Full Name"
-              disabled={loading}
-            />
-            {errors.name && (
-              <p className="register-field-error">{errors.name[0]}</p>
-            )}
-
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Email"
-              className="register-email"
-              aria-label="Email"
-              disabled={loading}
-            />
-            {errors.email && (
-              <p className="register-field-error">{errors.email[0]}</p>
-            )}
-
-            <div className="register-pass">
+            <div className="register-input-container">
               <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
+                type="text"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
-                placeholder="Password"
-                className="register-passwordInput"
-                aria-label="Password"
+                placeholder="Full Name"
+                className={`register-username ${fieldErrors.name ? 'error' : ''}`}
+                aria-label="Full Name"
                 disabled={loading}
               />
-              <button 
-                type="button" 
-                onClick={togglePasswordVisibility}
-                className="register-eyeButton" 
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                disabled={loading}
-              >
-                {showPassword ? (<EyeSlashIcon className="register-eyeIcon" />) :
-                (<EyeIcon className="register-eyeIcon" />)}
-              </button>
+              {fieldErrors.name && (
+                <p className="register-field-error">{fieldErrors.name}</p>
+              )}
             </div>
-            {errors.password && (
-              <p className="register-field-error">{errors.password[0]}</p>
-            )}
 
-            <input
-              type="password"
-              name="password_confirmation"
-              value={formData.password_confirmation}
-              onChange={handleChange}
-              placeholder="Confirm Password"
-              className="register-cp"
-              aria-label="Confirm Password"
-              disabled={loading}
-            />
+            <div className="register-input-container">
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email"
+                className={`register-email ${fieldErrors.email ? 'error' : ''}`}
+                aria-label="Email"
+                disabled={loading}
+              />
+              {fieldErrors.email && (
+                <p className="register-field-error">{fieldErrors.email}</p>
+              )}
+            </div>
+
+            <div className="register-input-container">
+              <div className="register-pass">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Password"
+                  className={`register-passwordInput ${fieldErrors.password ? 'error' : ''}`}
+                  aria-label="Password"
+                  disabled={loading}
+                />
+                <button 
+                  type="button" 
+                  onClick={togglePasswordVisibility}
+                  className="register-eyeButton" 
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={loading}
+                >
+                  {showPassword ? (<EyeSlashIcon className="register-eyeIcon" />) :
+                  (<EyeIcon className="register-eyeIcon" />)}
+                </button>
+              </div>
+              {fieldErrors.password && (
+                <p className="register-field-error">{fieldErrors.password}</p>
+              )}
+            </div>
+
+            <div className="register-input-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password_confirmation"
+                value={formData.password_confirmation}
+                onChange={handleChange}
+                placeholder="Confirm Password"
+                className={`register-cp ${fieldErrors.password_confirmation ? 'error' : ''}`}
+                aria-label="Confirm Password"
+                disabled={loading}
+              />
+              {fieldErrors.password_confirmation && (
+                <p className="register-field-error">{fieldErrors.password_confirmation}</p>
+              )}
+            </div>
           </div>
 
-          <label className="register-terms">
-            <input
-              type="checkbox"
-              name="acceptTerms"
-              checked={formData.acceptTerms}
-              onChange={(e) => {
-                if (!e.target.checked) {
-                  setFormData({ ...formData, acceptTerms: false });
-                } else {
-                  e.preventDefault(); // Prevent auto-check
-                  setShowTermsModal(true);
-                }
-              }}
-              className="register-text"
-              aria-label="Accept terms and conditions"
-              disabled={loading}
-            />
-            <span className="register-text2">
-              I agree to the Terms and Conditions
-            </span>
-          </label>
-
-          <p className="register-error" style={{ minHeight: '1.5em' }}>
-            {errorMessage}
-          </p>
+          <div className="register-terms-container">
+            <label className="register-terms">
+              <input
+                type="checkbox"
+                name="acceptTerms"
+                checked={formData.acceptTerms}
+                onChange={(e) => {
+                  if (!e.target.checked) {
+                    setFormData({ ...formData, acceptTerms: false });
+                  } else {
+                    e.preventDefault(); // Prevent auto-check
+                    setShowTermsModal(true);
+                  }
+                }}
+                className="register-text"
+                aria-label="Accept terms and conditions"
+                disabled={loading}
+              />
+              <span className="register-text2">
+                I agree to the Terms and Conditions
+              </span>
+            </label>
+            {fieldErrors.acceptTerms && (
+              <p className="register-field-error">{fieldErrors.acceptTerms}</p>
+            )}
+          </div>
 
           <button 
             type="submit" 
@@ -248,14 +379,9 @@ const Register = () => {
       </section>
 
       {showTermsModal && (
-        <TermsModal
-          onAccept={() => {
-            setFormData({ ...formData, acceptTerms: true });
-            setShowTermsModal(false);
-          }}
-          onClose={() => {
-            setShowTermsModal(false);
-          }}
+        <TermsModal 
+          onClose={() => setShowTermsModal(false)} 
+          onAccept={handleTermsAcceptance}
         />
       )}
     </main>

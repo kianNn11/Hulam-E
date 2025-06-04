@@ -6,17 +6,20 @@ import EditProfileModal from './EditProfileModal';
 import StudentVerificationModal from './StudentVerificationModal';
 import PostContent from './PostContent';
 import EarningsContent from './EarningsSection';
+import RentalManagement from './RentalManagement';
 import { useAuth } from '../../Context/AuthContext';
 import { userAPI } from '../../services/api';
+import AlertMessage from '../Common/AlertMessage';
 
 const Profile = () => {
   const location = useLocation();
   const { user, setUser, isLoggedIn } = useAuth();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isVerificationClicked, setIsVerificationClicked] = useState(false);
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
 
   // Use user data from AuthContext instead of localStorage
   const [profileData, setProfileData] = useState({
@@ -29,6 +32,11 @@ const Profile = () => {
     bio: user?.bio || '',
     profileImage: user?.profile_picture || null,
   });
+
+  const showAlert = (type, message) => {
+    setAlert({ show: true, type, message });
+    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 5000);
+  };
 
   // Update profile data when user changes
   useEffect(() => {
@@ -48,7 +56,19 @@ const Profile = () => {
 
   const handleSave = async (data) => {
     if (!isLoggedIn) {
-      alert('Please log in to update your profile');
+      showAlert('error', 'Please log in to update your profile');
+      return;
+    }
+
+    // Check if user account is suspended (client-side check)
+    if (user && user.verification_status === 'suspended') {
+      showAlert('error', 'Account Suspended: You cannot update your profile while your account is suspended. Please contact support for assistance.');
+      return;
+    }
+
+    // Check if user account is deactivated (client-side check)
+    if (user && user.verification_status === 'inactive') {
+      showAlert('error', 'Your account has been deactivated. Please contact support to reactivate your account.');
       return;
     }
 
@@ -66,39 +86,146 @@ const Profile = () => {
         profile_picture: data.profileImage,
       };
 
+      // Remove empty values to avoid validation errors
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] === '' || updateData[key] === null) {
+          delete updateData[key];
+        }
+      });
+
+      console.log('Sending update data:', {
+        ...updateData,
+        profile_picture: updateData.profile_picture ? 
+          `[Base64 Image - ${updateData.profile_picture.length} chars]` : 
+          'null'
+      });
+
       // Call API to update profile
       const response = await userAPI.updateProfile(updateData);
       
+      console.log('API Response:', response.data);
+      
       if (response.data.success || response.data.user) {
-        // Update local state
-        setProfileData(data);
+        // Get the updated user data from response
+        const returnedUser = response.data.user;
         
-        // Update user in AuthContext
-        const updatedUser = response.data.user || { ...user, ...updateData };
+        console.log('Returned user profile_picture:', returnedUser?.profile_picture ? 
+          `[${returnedUser.profile_picture.length} chars]` : 'null');
+        
+        // Update local profileData state with the form data (immediate update)
+        const updatedProfileData = {
+          fullName: data.fullName,
+          courseYear: data.courseYear,
+          birthday: data.birthday,
+          gender: data.gender,
+          socialLink: data.socialLink,
+          contactNumber: data.contactNumber,
+          bio: data.bio,
+          // Use the returned profile picture if available, otherwise use the submitted one
+          profileImage: returnedUser?.profile_picture || data.profileImage
+        };
+        
+        console.log('Setting profile data:', {
+          ...updatedProfileData,
+          profileImage: updatedProfileData.profileImage ? 
+            `[${updatedProfileData.profileImage.length} chars]` : 'null'
+        });
+        
+        setProfileData(updatedProfileData);
+        
+        // Update user in AuthContext - ensure proper field mapping
+        const updatedUser = {
+          ...user,
+          ...returnedUser,
+          // Ensure profile_picture is properly set
+          profile_picture: returnedUser?.profile_picture || data.profileImage
+        };
+        
+        console.log('Setting user data:', {
+          ...updatedUser,
+          profile_picture: updatedUser.profile_picture ? 
+            `[${updatedUser.profile_picture.length} chars]` : 'null'
+        });
+        
         setUser(updatedUser);
         
         // Update localStorage
         localStorage.setItem('userData', JSON.stringify(updatedUser));
         
-        alert('Profile updated successfully!');
+        showAlert('success', 'Profile updated successfully!');
         setIsModalOpen(false);
+        
+        // Force re-render by updating state
+        setProfileData(prev => ({ ...prev }));
+        
+      } else {
+        throw new Error('Profile update failed - no success response');
       }
     } catch (error) {
       console.error('Profile update error:', error);
-      alert(error.response?.data?.message || 'Failed to update profile. Please try again.');
+      console.error('Error response:', error.response?.data);
+      
+      // Handle different types of errors with detailed messages
+      if (error.response?.status === 403) {
+        const data = error.response.data;
+        
+        // Handle suspended account with detailed restrictions
+        if (data.error === 'Account suspended' || error.restrictionDetails?.type === 'suspended') {
+          const details = error.restrictionDetails || data.restriction_details || {};
+          const actionMessage = details.blocked_action || details.blockedAction || 'updating your profile';
+          const contactInfo = details.contact_info || details.contactInfo || 'Please contact support for assistance.';
+          
+          showAlert('error', 
+            `Account Suspended: You cannot perform this action (${actionMessage}). ${contactInfo}`
+          );
+        } else if (data.error === 'Account deactivated') {
+          showAlert('error', 'Your account has been deactivated. Please contact support to reactivate your account.');
+        } else {
+          showAlert('error', data.message || 'You do not have permission to update your profile.');
+        }
+      } else if (error.response?.status === 422) {
+        const errorData = error.response.data;
+        if (errorData.errors) {
+          const firstError = Object.values(errorData.errors)[0];
+          const errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+          showAlert('error', `Validation Error: ${errorMessage}`);
+        } else {
+          showAlert('error', errorData.message || 'Please check your input and try again.');
+        }
+      } else if (!error.response) {
+        showAlert('error', 'Network error. Please check your internet connection and try again.');
+      } else {
+        showAlert('error', error.response?.data?.message || error.message || 'Failed to update profile. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleCloseVerificationModal = () => {
-    setIsVerificationClicked(false);
     setIsVerificationModalOpen(false);
+  };
+
+  const handleVerificationButtonClick = () => {
+    if (!user) return;
+
+    if (user.verified) {
+      // Already verified - show verified message
+      setShowVerificationMessage(true);
+      setTimeout(() => setShowVerificationMessage(false), 3000);
+    } else if (user.verification_status === 'pending') {
+      // Verification pending - show pending message
+      setShowVerificationMessage(true);
+      setTimeout(() => setShowVerificationMessage(false), 5000);
+    } else {
+      // Unverified (includes 'unverified', null, undefined, or any other status) - open upload modal
+      setIsVerificationModalOpen(true);
+    }
   };
 
   const handleUpload = async (file) => {
     if (!isLoggedIn || !user) {
-      alert('Please log in to submit verification documents');
+      showAlert('error', 'Please log in to submit verification documents');
       return;
     }
 
@@ -117,7 +244,7 @@ const Profile = () => {
       const response = await userAPI.verifyStudent(formData);
       
       if (response.data.success) {
-        alert('Verification document submitted successfully! Your request is now pending admin review.');
+        showAlert('success', 'Verification document submitted successfully! Your request is now pending admin review.');
         
         // Update user verification status in context
         const updatedUser = { 
@@ -128,15 +255,14 @@ const Profile = () => {
         setUser(updatedUser);
         localStorage.setItem('userData', JSON.stringify(updatedUser));
       } else {
-        alert('Failed to submit verification document. Please try again.');
+        showAlert('error', 'Failed to submit verification document. Please try again.');
       }
     } catch (error) {
       console.error('Verification submission error:', error);
-      alert(error.response?.data?.error || error.response?.data?.message || 'Failed to submit verification document. Please try again.');
+      showAlert('error', error.response?.data?.error || error.response?.data?.message || 'Failed to submit verification document. Please try again.');
     } finally {
       setLoading(false);
       setIsVerificationModalOpen(false);
-      setIsVerificationClicked(false);
     }
   };
 
@@ -144,6 +270,7 @@ const Profile = () => {
     switch (location.pathname) {
       case '/profile': return 'post';
       case '/earnings': return 'earnings';
+      case '/rental-management': return 'rentals';
       default: return '';
     }
   })();
@@ -162,90 +289,141 @@ const Profile = () => {
 
   return (
     <main className='profile'>
+      {alert.show && (
+        <AlertMessage 
+          type={alert.type} 
+          message={alert.message} 
+          onClose={() => setAlert({ show: false, type: '', message: '' })}
+          className="fixed-alert"
+        />
+      )}
+      
       <section className="profile-section">
         <div className="profile-background">
           <div className="profile-header" />
 
           <div className="profile-name-container">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="profile-edit-profile-button"
-              disabled={loading}
-            >
-              <PencilSquareIcon className='profile-editIcon' />
-            </button>
-
             <div className="icon-and-name-wrapper">
-              {profileData.profileImage ? (
-                <img
-                  src={profileData.profileImage}
-                  alt="Profile"
-                  className="profile-userImage"
-                />
-              ) : (
-                <UserCircleIcon className="profile-userIcon" />
-              )}
-
-              <div className="name-verification-row">
-                <h1 className="profile-name">{profileData.fullName || user?.name || "Your Name"}</h1>
-                <p
-                  className={`profile-verificationStatus ${isVerificationClicked ? 'clicked' : ''} ${user?.verified ? 'verified' : 'unverified'}`}
-                  onClick={() => {
-                    if (!user?.verified) {
-                      setIsVerificationClicked(true);
-                      setIsVerificationModalOpen(true);
-                    }
-                  }}
+              <div className="profile-image-section">
+                <div 
+                  className="profile-image-container"
+                  onClick={() => setIsModalOpen(true)}
+                  title="Click to change profile picture"
                 >
-                  {user?.verified ? '✓ Verified' : '*Unverified'}
-                </p>
+                  {profileData.profileImage ? (
+                    <div className="profile-image-wrapper">
+                      <img
+                        src={profileData.profileImage.startsWith('/storage/') 
+                          ? `http://localhost:8000${profileData.profileImage}`
+                          : profileData.profileImage
+                        }
+                        alt="Profile"
+                        className="profile-image"
+                      />
+                    </div>
+                  ) : (
+                    <UserCircleIcon className="profile-default-icon" />
+                  )}
+                </div>
+                
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="profile-edit-button"
+                  disabled={loading}
+                  title="Edit Profile"
+                >
+                  <PencilSquareIcon className='edit-icon' />
+                </button>
+              </div>
+
+              <div className="profile-name-section">
+                <h1 className="profile-name">{profileData.fullName || user?.name || 'Your Name'}</h1>
+                <p className="profile-course">{profileData.courseYear || 'Course & Year'}</p>
+                <div className="profile-verification-status">
+                  {user?.verified ? (
+                    <div className="verification-status-container">
+                      <span className="verification-verified">✓ Verified Student</span>
+                      {showVerificationMessage && (
+                        <div className="verification-message verified-message">
+                          You are a verified student! 🎉
+                        </div>
+                      )}
+                    </div>
+                  ) : user?.verification_status === 'pending' ? (
+                    <div className="verification-status-container">
+                      <button 
+                        className="verification-pending-button"
+                        onClick={handleVerificationButtonClick}
+                        disabled={loading}
+                      >
+                        ⏳ Verification Pending
+                      </button>
+                      {showVerificationMessage && (
+                        <div className="verification-message pending-message">
+                          Your verification is in progress. Please wait for the admin to confirm it.
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="verification-status-container">
+                      <button 
+                        className="verification-button unverified"
+                        onClick={handleVerificationButtonClick}
+                        disabled={loading}
+                      >
+                        📋 Verify Student Status
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Bio section */}
-          {profileData.bio && (
-            <div className="profile-bio">
-              <p>{profileData.bio}</p>
-            </div>
-          )}
-        </div>
+          <div className="profile-nav">
+            <Link 
+              to="/profile" 
+              className={`profile-tab ${activeTab === 'post' ? 'active' : ''}`}
+            >
+              Post
+            </Link>
+            <Link 
+              to="/earnings" 
+              className={`profile-tab ${activeTab === 'earnings' ? 'active' : ''}`}
+            >
+              Earnings
+            </Link>
+            <Link 
+              to="/rental-management" 
+              className={`profile-tab ${activeTab === 'rentals' ? 'active' : ''}`}
+            >
+              Rentals
+            </Link>
+          </div>
 
-        <nav className="profile-profileNavigation">
-          <ul className="profile-nav-items">
-            <li>
-              <Link to="/profile" className={`profile-navItem ${activeTab === 'post' ? 'active' : ''}`}>
-                Post
-              </Link>
-            </li>
-            <li>
-              <Link to="/earnings" className={`profile-navItem ${activeTab === 'earnings' ? 'active' : ''}`}>
-                Earnings
-              </Link>
-            </li>
-          </ul>
-        </nav>
+          {activeTab === 'post' && <PostContent profileData={profileData} user={user} />}
+          {activeTab === 'earnings' && <EarningsContent />}
+          {activeTab === 'rentals' && <RentalManagement />}
+        </div>
       </section>
 
-      {/* Conditionally render content based on activeTab */}
-      {activeTab === 'post' && <PostContent profileData={profileData} user={user} />}
-      {activeTab === 'earnings' && <EarningsContent />}
-
-      {/* Modals */}
       {isModalOpen && (
         <EditProfileModal
-          profileData={profileData}
-          user={user}
+          isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSave={handleSave}
+          profileData={profileData}
+          user={user}
           loading={loading}
         />
       )}
 
       {isVerificationModalOpen && (
         <StudentVerificationModal
+          isOpen={isVerificationModalOpen}
           onClose={handleCloseVerificationModal}
           onUpload={handleUpload}
+          loading={loading}
         />
       )}
     </main>

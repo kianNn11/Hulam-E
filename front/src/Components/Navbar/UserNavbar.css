@@ -4,15 +4,16 @@
     left: 0;
     width: 100%; /* fixed width */
     height: 78px;
-    background-color: #fff;
+    background-color: var(--navbar-bg);
     display: flex;
     align-items: center;
     font-size: 16px;
     font-weight: 400;
-    box-shadow: 0 4px 4px #00000040;
+    box-shadow: 0 4px 4px var(--shadow);
     z-index: 999;
     padding: 0 30px;
     box-sizing: border-box;
+    transition: background-color 0.3s ease;
   }
   
   .user-nav-logo {
@@ -37,7 +38,7 @@
 
 .user-nav-link {
   text-decoration: none;
-  color: #111827;
+  color: var(--text-primary);
   background: none;
   border: none;
   padding: 0;
@@ -47,17 +48,17 @@
   }
 
   .user-nav-link:hover {
-    color: #5998F6;
+    color: var(--accent-color);
   }
 
   .user-nav-link:focus {
-    color: #5998F6;
-    border-bottom: 3px solid #5998F6;
+    color: var(--accent-color);
+    border-bottom: 3px solid var(--accent-color);
   }
 
   .user-nav-link.active {
-    color: #5998F6;
-    border-bottom: 3px solid #5998F6;
+    color: var(--accent-color);
+    border-bottom: 3px solid var(--accent-color);
 }
 
   .user-nav-buttons {
@@ -72,18 +73,19 @@
     align-items: center;
     margin-left: 50px;
     position: relative;
+    padding-left: 20px;
   }
 
 .user-heroIcon:hover {
-  stroke: #5998F6;
+  stroke: var(--accent-color);
 }
 
 .user-heroIcon:focus {
-  stroke: #5998F6;
+  stroke: var(--accent-color);
 }
 
 .user-iconButton.active .user-heroIcon {
-  stroke: #5998F6; /* your desired blue */
+  stroke: var(--accent-color);
 }
 
 
@@ -102,7 +104,7 @@
 .user-heroIcon {
     width: 30px;
     height: 30px;
-    color: #111827;
+    color: var(--text-primary);
     transition: color 0.2s ease;
   }
 
@@ -120,12 +122,14 @@
   }
   
   .user-modal {
-    background: white;
+    background: var(--modal-bg);
+    color: var(--text-primary);
     padding: 1.5rem 2rem;
     border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 12px var(--shadow);
     text-align: center;
     width: 300px;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   
   .user-modal-buttons {
@@ -135,12 +139,17 @@
   }
   
   .user-confirm-btn {
-    background-color: #5998F6;
+    background-color: var(--accent-color);
     color: white;
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 6px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .user-confirm-btn:hover {
+    background-color: var(--accent-hover);
   }
   
   .user-cancel-btn {
@@ -172,10 +181,11 @@
     width: 1220px;
     max-height: 95vh;
     overflow-y: auto;
-    background-color: #f9fafb;
+    background-color: var(--bg-primary);
     border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 25px var(--shadow);
     overflow: hidden;
+    transition: background-color 0.3s ease;
   }
   
   .close-button {
@@ -215,10 +225,11 @@
     position: absolute;
     top: 60px; /* adjust based on your navbar height */
     right: 0;
-    background: white;
+    background: var(--navbar-bg);
     padding: 1rem;
     border-radius: 0.5rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px var(--shadow);
+    transition: background-color 0.3s ease;
   }
 
   .user-menu-overlay {
@@ -254,18 +265,19 @@
   
   .user-menu-content {
     width: 250px;
-    background-color: white;
+    background-color: var(--navbar-bg);
+    color: var(--text-primary);
     position: absolute;
     top: 0;
     right: 0;
     height: 100%;
     padding: 20px;
-    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: -2px 0 10px var(--shadow);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     overflow-y: auto;
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, background-color 0.3s ease, color 0.3s ease;
   }
   
   .user-menu-links {
@@ -278,15 +290,15 @@
     display: block;
     padding: 15px;
     font-size: 16px;
-    color: #333;
+    color: var(--text-primary);
     text-decoration: none;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
   
   .user-nav-link:hover,
   .user-nav-link.active {
-    background-color: #f4f4f4;
-    color: #1d4ed8; /* Blue shade for active link */
+    background-color: var(--bg-secondary);
+    color: var(--accent-color);
   }
   
   /* Adjust the profile, cart, and logout links */
@@ -300,12 +312,12 @@
     padding: 12px 0;
     text-align: left;
     font-size: 14px;
-    color: #555;
+    color: var(--text-secondary);
   }
   
   .user-menu-icons .user-nav-link:hover {
-    background-color: #f4f4f4;
-    color: #1d4ed8;
+    background-color: var(--bg-secondary);
+    color: var(--accent-color);
   }
   
   /* Optional: Add spacing between links */
@@ -328,4 +340,23 @@
   
   } 
 
+  .user-login-menu {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-menu-btn {
+    display: none;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+  }
+
+  @media (max-width: 720px) {
+    .login-menu-btn {
+      display: flex;
+    }
+  }
   

@@ -8,12 +8,26 @@ const api = axios.create({
     'Accept': 'application/json',
   },
   withCredentials: true,
+  timeout: 10000, // 10 second timeout
 });
+
+// Track if we're currently redirecting to avoid multiple redirects
+let isRedirecting = false;
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken');
+    
+    console.log('API Request interceptor:', {
+      url: config.url,
+      method: config.method?.toUpperCase(),
+      hasToken: !!token,
+      tokenLength: token ? token.length : 0,
+      isFormData: config.data instanceof FormData,
+      headers: config.headers
+    });
+    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -26,19 +40,114 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
 
-// Response interceptor to handle auth errors
+// Response interceptor to handle auth errors and retries
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
-      window.location.href = '/login';
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // Handle 401 errors (unauthorized)
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      // Only redirect to login if we have a token (meaning it's expired/invalid)
+      // Don't redirect if there's no token (user might be on a public page)
+      const token = localStorage.getItem('authToken');
+      if (token && !isRedirecting) {
+        console.warn('Authentication failed, clearing session');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        
+        // Only redirect if we're not already on the login page
+        if (!window.location.pathname.includes('/login') && 
+            !window.location.pathname.includes('/register') &&
+            !window.location.pathname === '/') {
+          isRedirecting = true;
+          window.location.href = '/login';
+        }
+      }
     }
+
+    // Handle 403 errors (suspended/deactivated accounts)
+    if (error.response?.status === 403) {
+      const data = error.response.data;
+      
+      // Handle deactivated accounts - force logout
+      if (data.error === 'Account deactivated' || data.force_logout) {
+        console.warn('Account deactivated, forcing logout');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        
+        if (!isRedirecting) {
+          isRedirecting = true;
+          // Show detailed alert and redirect to login
+          const message = data.restriction_details?.contact_info 
+            ? `${data.message}\n\n${data.restriction_details.contact_info}`
+            : data.message || 'Your account has been deactivated. Please contact support.';
+          
+          alert(message);
+          window.location.href = '/login';
+        }
+        return Promise.reject(error);
+      }
+      
+      // Handle suspended accounts - show specific error but don't force logout
+      if (data.error === 'Account suspended') {
+        console.warn('Account suspended, blocking operation:', data.restriction_details?.blocked_action || 'unknown action');
+        
+        // Add detailed restriction info to error for components to use
+        error.restrictionDetails = {
+          type: 'suspended',
+          blockedAction: data.restriction_details?.blocked_action || 'this action',
+          contactInfo: data.restriction_details?.contact_info || 'Please contact support.',
+          message: data.message
+        };
+        
+        // The component will handle displaying the error message
+        return Promise.reject(error);
+      }
+      
+      // Handle other 403 errors with detailed messages
+      if (data.restriction_type) {
+        error.restrictionDetails = {
+          type: data.restriction_type,
+          blockedAction: data.restriction_details?.blocked_action || 'this action',
+          contactInfo: data.restriction_details?.contact_info || 'Please contact support.',
+          message: data.message
+        };
+        return Promise.reject(error);
+      }
+    }
+    
+    // Handle network errors with retry logic for non-auth requests
+    if (!error.response && !originalRequest._retry && 
+        !originalRequest.url.includes('/auth/') && 
+        !originalRequest.url.includes('/user')) {
+      originalRequest._retry = true;
+      
+      // Wait 1 second before retry
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      try {
+        return await api.request(originalRequest);
+      } catch (retryError) {
+        console.warn('Retry failed:', retryError);
+        return Promise.reject(retryError);
+      }
+    }
+    
+    // Reset redirecting flag after some time
+    if (isRedirecting) {
+      setTimeout(() => {
+        isRedirecting = false;
+      }, 2000);
+    }
+    
     return Promise.reject(error);
   }
 );
@@ -49,6 +158,7 @@ export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
   logout: () => api.post('/auth/logout'),
   getCurrentUser: () => api.get('/user'),
+  healthCheck: () => api.get('/test'), // Simple health check endpoint
 };
 
 // User endpoints

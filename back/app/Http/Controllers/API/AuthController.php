@@ -29,6 +29,8 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'user', // Default role
+            'verification_status' => 'unverified', // Explicitly set to unverified
+            'verified' => false, // Explicitly set to false
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -58,6 +60,15 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request->email)->firstOrFail();
+        
+        // Check if user account is deactivated
+        if ($user->verification_status === 'inactive') {
+            return response()->json([
+                'error' => 'Account deactivated',
+                'message' => 'Your account has been deactivated. Please contact support to reactivate your account.'
+            ], 403);
+        }
+        
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

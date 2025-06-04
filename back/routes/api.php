@@ -191,6 +191,10 @@ Route::post('/checkout', function(Request $request) {
             'renter_id' => $validated['renter_id']
         ]);
 
+        // Determine transaction status based on payment method
+        $transactionStatus = $validated['payment_method'] === 'gcash' ? 'completed' : 'pending';
+        $completedAt = $validated['payment_method'] === 'gcash' ? now() : null;
+
         // Create transactions for each item
         foreach ($validated['items'] as $item) {
             $rental = Rental::find($item['id']);
@@ -204,18 +208,20 @@ Route::post('/checkout', function(Request $request) {
                 'rental_id' => $rental->id,
                 'owner_id' => $rental->user_id,
                 'renter_id' => $validated['renter_id'],
-                'amount' => $item['price']
+                'amount' => $item['price'],
+                'status' => $transactionStatus
             ]);
 
             $transaction = Transaction::create([
                 'rental_id' => $rental->id,
                 'renter_id' => $validated['renter_id'],
                 'owner_id' => $rental->user_id,
-                'status' => 'pending',
+                'status' => $transactionStatus,
                 'start_date' => now()->addDay(), // Default to tomorrow
                 'end_date' => now()->addDays(7), // Default 7 days
                 'total_amount' => $item['price'],
-                'renter_message' => $validated['message'] ?? "Rental request via checkout for {$validated['rent_duration']}"
+                'renter_message' => $validated['message'] ?? "Rental request via checkout for {$validated['rent_duration']}",
+                'completed_at' => $completedAt
             ]);
 
             $transactions[] = $transaction;
@@ -223,62 +229,92 @@ Route::post('/checkout', function(Request $request) {
             \Illuminate\Support\Facades\Log::info('Transaction created', [
                 'transaction_id' => $transaction->id,
                 'rental_id' => $rental->id,
-                'owner_id' => $rental->user_id
+                'owner_id' => $rental->user_id,
+                'status' => $transactionStatus
             ]);
 
             // Update rental status to 'rented' after successful checkout
             $rental->update(['status' => 'rented']);
 
-            // Create notification for owner
-            Notification::createForUser(
-                $rental->user_id,
-                'rental_request',
-                'New Rental Request',
-                "{$validated['renter_name']} wants to rent your '{$rental->title}' via checkout",
-                [
-                    'transaction_id' => $transaction->id,
-                    'rental_id' => $rental->id,
-                    'renter_id' => $validated['renter_id'],
-                    'total_amount' => $item['price'],
-                    'contact_number' => $validated['contact_number'],
-                    'rent_duration' => $validated['rent_duration'],
-                    'payment_method' => $validated['payment_method']
-                ]
-            );
+            // Create appropriate notification for owner based on transaction status
+            if ($transactionStatus === 'completed') {
+                Notification::createForUser(
+                    $rental->user_id,
+                    'rental_completed',
+                    'Rental Payment Received',
+                    "{$validated['renter_name']} has completed payment for your '{$rental->title}' via GCash. You have earned ₱" . number_format($item['price'], 2),
+                    [
+                        'transaction_id' => $transaction->id,
+                        'rental_id' => $rental->id,
+                        'renter_id' => $validated['renter_id'],
+                        'total_amount' => $item['price'],
+                        'contact_number' => $validated['contact_number'],
+                        'rent_duration' => $validated['rent_duration'],
+                        'payment_method' => $validated['payment_method']
+                    ]
+                );
+            } else {
+                Notification::createForUser(
+                    $rental->user_id,
+                    'rental_request',
+                    'New Rental Request',
+                    "{$validated['renter_name']} wants to rent your '{$rental->title}' via checkout",
+                    [
+                        'transaction_id' => $transaction->id,
+                        'rental_id' => $rental->id,
+                        'renter_id' => $validated['renter_id'],
+                        'total_amount' => $item['price'],
+                        'contact_number' => $validated['contact_number'],
+                        'rent_duration' => $validated['rent_duration'],
+                        'payment_method' => $validated['payment_method']
+                    ]
+                );
+            }
         }
 
         // Create notification for renter if authenticated
         if ($validated['renter_id']) {
+            $notificationTitle = $transactionStatus === 'completed' ? 'Payment Successful' : 'Checkout Complete';
+            $notificationMessage = $transactionStatus === 'completed' 
+                ? "Your payment of ₱" . number_format($finalTotal, 2) . " has been processed successfully. Your rental is confirmed!"
+                : "Your rental request for " . count($validated['items']) . " item(s) has been submitted. Total: ₱" . number_format($finalTotal, 2);
+
             Notification::createForUser(
                 $validated['renter_id'],
-                'checkout_complete',
-                'Checkout Complete',
-                "Your rental request for " . count($validated['items']) . " item(s) has been submitted. Total: ₱" . number_format($finalTotal, 2),
+                $transactionStatus === 'completed' ? 'payment_success' : 'checkout_complete',
+                $notificationTitle,
+                $notificationMessage,
                 [
                     'total_amount' => $finalTotal,
                     'platform_fee' => $platform_fee,
                     'subtotal' => $totalAmount,
                     'payment_method' => $validated['payment_method'],
-                    'item_count' => count($validated['items'])
+                    'item_count' => count($validated['items']),
+                    'status' => $transactionStatus
                 ]
             );
         }
 
         \Illuminate\Support\Facades\Log::info('Checkout completed successfully', [
             'transaction_count' => count($transactions),
-            'transaction_ids' => array_map(fn($t) => $t->id, $transactions)
+            'transaction_ids' => array_map(fn($t) => $t->id, $transactions),
+            'status' => $transactionStatus
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Checkout completed successfully',
+            'message' => $transactionStatus === 'completed' 
+                ? 'Payment completed successfully! Your earnings have been updated.' 
+                : 'Checkout completed successfully',
             'data' => [
                 'transaction_ids' => array_map(fn($t) => $t->id, $transactions),
                 'subtotal' => $totalAmount,
                 'platform_fee' => $platform_fee,
                 'total_amount' => $finalTotal,
                 'items_count' => count($validated['items']),
-                'payment_method' => $validated['payment_method']
+                'payment_method' => $validated['payment_method'],
+                'status' => $transactionStatus,
+                'earnings_updated' => $transactionStatus === 'completed'
             ]
         ]);
 
@@ -303,7 +339,7 @@ Route::post('/checkout', function(Request $request) {
 });
 
 // Protected routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     Route::get('/user', [UserController::class, 'getCurrentUser']);
     
     // User profile - specific route must come before parameterized route
@@ -596,6 +632,12 @@ Route::middleware('auth:sanctum')->group(function () {
                 ->orderBy('created_at', 'desc')
                 ->get();
             
+            // Get all transactions where user is the renter (borrowed items)
+            $borrowedTransactions = Transaction::with(['rental:id,title,price,image', 'owner:id,name'])
+                ->where('renter_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+            
             // Calculate earnings statistics
             $totalEarnings = $transactions->where('status', 'completed')->sum('total_amount');
             $pendingEarnings = $transactions->whereIn('status', ['pending', 'approved'])->sum('total_amount');
@@ -604,6 +646,11 @@ Route::middleware('auth:sanctum')->group(function () {
             // Get rental statistics
             $totalRentals = $user->rentals()->count();
             $activeRentals = $user->rentals()->where('status', 'rented')->count();
+            
+            // Calculate borrowed items statistics
+            $totalBorrowed = $borrowedTransactions->count();
+            $activeBorrowed = $borrowedTransactions->whereIn('status', ['approved', 'completed'])->count();
+            $totalSpent = $borrowedTransactions->where('status', 'completed')->sum('total_amount');
             
             // Generate monthly breakdown (last 12 months)
             $monthlyBreakdown = [];
@@ -645,6 +692,31 @@ Route::middleware('auth:sanctum')->group(function () {
                     'rentalTitle' => $transaction->rental->title ?? 'Unknown'
                 ];
             });
+
+            // Format borrowed items for frontend
+            $formattedBorrowedItems = $borrowedTransactions->map(function($transaction) {
+                $statusDescriptions = [
+                    'pending' => 'Rental request pending',
+                    'approved' => 'Rental approved - active',
+                    'completed' => 'Rental completed',
+                    'rejected' => 'Rental request rejected',
+                    'cancelled' => 'Rental cancelled'
+                ];
+                
+                return [
+                    'id' => $transaction->id,
+                    'date' => $transaction->created_at->toISOString(),
+                    'amount' => $transaction->total_amount,
+                    'status' => $transaction->status,
+                    'description' => $statusDescriptions[$transaction->status] ?? 'Unknown status',
+                    'rentalId' => $transaction->rental_id,
+                    'rentalTitle' => $transaction->rental->title ?? 'Unknown',
+                    'rentalImage' => $transaction->rental->image ?? null,
+                    'ownerName' => $transaction->owner->name ?? 'Unknown',
+                    'startDate' => $transaction->start_date->toISOString(),
+                    'endDate' => $transaction->end_date->toISOString()
+                ];
+            });
             
             return response()->json([
                 'totalEarnings' => $totalEarnings,
@@ -654,6 +726,12 @@ Route::middleware('auth:sanctum')->group(function () {
                 'totalRentals' => $totalRentals,
                 'activeRentals' => $activeRentals,
                 'transactions' => $formattedTransactions,
+                'borrowedItems' => $formattedBorrowedItems,
+                'borrowedStats' => [
+                    'totalBorrowed' => $totalBorrowed,
+                    'activeBorrowed' => $activeBorrowed,
+                    'totalSpent' => $totalSpent
+                ],
                 'monthlyBreakdown' => $monthlyBreakdown
             ]);
             
@@ -674,7 +752,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Notification APIs
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
     // Get user notifications
     Route::get('/notifications', function(Request $request) {
         try {

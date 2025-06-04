@@ -86,6 +86,21 @@ class User extends Authenticatable
         ];
     }
     
+    /**
+     * Boot method to set defaults for user creation
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($user) {
+            // Ensure verification_status is set to 'unverified' for new users
+            if (empty($user->verification_status)) {
+                $user->verification_status = 'unverified';
+            }
+        });
+    }
+    
     public function rentals()
     {
         return $this->hasMany(Rental::class);
@@ -144,5 +159,99 @@ class User extends Authenticatable
     public function hasCompleteProfile()
     {
         return $this->profile_completion >= 80;
+    }
+    
+    /**
+     * Get formatted profile picture URL
+     */
+    public function getProfilePictureUrl()
+    {
+        if (empty($this->profile_picture)) {
+            return null;
+        }
+        
+        // If it's already a full URL (starts with http), return as is
+        if (str_starts_with($this->profile_picture, 'http')) {
+            return $this->profile_picture;
+        }
+        
+        // If it's a base64 image, return as is
+        if (str_starts_with($this->profile_picture, 'data:image/')) {
+            return $this->profile_picture;
+        }
+        
+        // If it's a file path, convert to full URL
+        return asset('storage/' . $this->profile_picture);
+    }
+    
+    /**
+     * Get profile picture attribute with proper formatting
+     */
+    public function getProfilePictureAttribute($value)
+    {
+        return $value;
+    }
+    
+    /**
+     * Append additional attributes to model array/JSON representation
+     */
+    protected $appends = ['profile_picture_url'];
+    
+    /**
+     * Get the profile picture URL.
+     * Converts relative paths to full URLs for API responses.
+     */
+    public function getProfilePictureUrlAttribute()
+    {
+        if (!$this->profile_picture) {
+            return null;
+        }
+        
+        // If it's already a full URL (starts with http), return as-is
+        if (str_starts_with($this->profile_picture, 'http')) {
+            return $this->profile_picture;
+        }
+        
+        // If it's a storage path, convert to full URL
+        if (str_starts_with($this->profile_picture, '/storage/')) {
+            return config('app.url') . $this->profile_picture;
+        }
+        
+        // If it's a base64 image, return as-is
+        if (str_starts_with($this->profile_picture, 'data:image/')) {
+            return $this->profile_picture;
+        }
+        
+        // Default case - assume it's a relative path
+        return config('app.url') . '/' . ltrim($this->profile_picture, '/');
+    }
+
+    /**
+     * Clean up old profile picture file when user is deleted or picture is changed.
+     */
+    public function cleanupProfilePicture($oldPath = null)
+    {
+        $pathToClean = $oldPath ?: $this->profile_picture;
+        
+        if ($pathToClean && str_starts_with($pathToClean, '/storage/profile_pictures/')) {
+            $filePath = public_path($pathToClean);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+                \Log::info('Cleaned up profile picture file:', [
+                    'user_id' => $this->id,
+                    'file_path' => $filePath
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Override the toArray method to include profile_picture_url.
+     */
+    public function toArray()
+    {
+        $array = parent::toArray();
+        $array['profile_picture_url'] = $this->profile_picture_url;
+        return $array;
     }
 }

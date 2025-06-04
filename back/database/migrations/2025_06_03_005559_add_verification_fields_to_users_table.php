@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('verification_document_type', 50)->nullable(); // ID, Student ID, etc.
             $table->timestamp('verification_submitted_at')->nullable();
             $table->timestamp('verification_reviewed_at')->nullable();
-            $table->string('verification_status', 20)->default('pending'); // pending, approved, denied
+            $table->string('verification_status', 20)->default('unverified'); // unverified, pending, approved, denied
             $table->text('verification_notes')->nullable(); // Admin notes for verification
             $table->unsignedBigInteger('verified_by')->nullable(); // Admin who verified
             

@@ -10,6 +10,7 @@ import AdminForm from './Pages/AdminForm';
 import RentalPage from './Pages/RentalPage';
 import ProfilePage from './Pages/ProfilePage';
 import EarningsPage from './Pages/EarningsPage';
+import RentalManagementPage from './Pages/RentalManagementPage';
 import AdminPage from './Pages/AdminPage';
 import AccountConfirmationPage from './Pages/AccountConfirmationPage';
 import UserManagementPage from './Pages/UserManagementPage';
@@ -75,9 +76,11 @@ function App() {
           <Route path='/register' element={<RegisterForm />} />
           <Route path='/admin' element={<AdminForm />} />
           <Route path='/rental-section' element={<RentalPage />} />
+          <Route path='/rentals' element={<RentalPage />} />
           <Route path='/dashboard' element={<AdminPage />} />
           <Route path='/profile' element={<ProfilePage />} />
           <Route path='/earnings' element={<EarningsPage />} />
+          <Route path='/rental-management' element={<RentalManagementPage />} />
           <Route path='/account-confirmation' element={<AccountConfirmationPage />} />
           <Route path='/user-management' element={<UserManagementPage />} />
           <Route path='/post' element={<PostPage />} />

@@ -55,13 +55,23 @@ try {
     );
     
     // Find user by email
-    $stmt = $db->prepare("SELECT id, name, email, password, role FROM users WHERE email = ?");
+    $stmt = $db->prepare("SELECT id, name, email, password, role, verification_status FROM users WHERE email = ?");
     $stmt->execute([$data['email']]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$user) {
         http_response_code(401);
         echo json_encode(['error' => 'Invalid credentials']);
+        exit;
+    }
+    
+    // Check if user account is deactivated
+    if ($user['verification_status'] === 'inactive') {
+        http_response_code(403);
+        echo json_encode([
+            'error' => 'Account deactivated',
+            'message' => 'Your account has been deactivated. Please contact support to reactivate your account.'
+        ]);
         exit;
     }
     

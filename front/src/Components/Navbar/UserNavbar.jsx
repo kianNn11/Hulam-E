@@ -4,14 +4,17 @@ import logo from '../Assets/logo.png';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Bars3Icon } from '@heroicons/react/24/solid';
 import {
-  ShoppingBagIcon,
   UserCircleIcon,
   ArrowLeftEndOnRectangleIcon,
+  SunIcon,
+  MoonIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../Context/AuthContext';
+import { useTheme } from '../../Context/ThemeContext';
 
 const UserNavbar = () => {
   const { logout } = useAuth(); 
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -19,32 +22,24 @@ const UserNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const getActiveMenu = () => {
+    switch (location.pathname) {
+      case '/rental-section':
+        return 'rental-section';
+      case '/post':
+        return 'post';
+      case '/about-us':
+        return 'about';
+      case '/contact':
+        return 'contact';
+      case '/profile':
+        return 'profile';
+      default:
+        return '';
+    }
+  };
 
-const closeModal = () => {
-  setIsModalOpen(false);
-};
-
-
-const getActiveMenu = () => {
-  switch (location.pathname) {
-    case '/rental-section':
-      return 'rental-section';
-    case '/post':
-      return 'post';
-    case '/about-us':
-      return 'about';
-    case '/contact':
-      return 'contact';
-    case '/profile':
-      return 'profile';
-    default:
-      return '';
-  }
-};
-
-const activeMenu = getActiveMenu();
-
+  const activeMenu = getActiveMenu();
 
   const toggleMenu = (e) => {
     e.stopPropagation();
@@ -139,6 +134,18 @@ const activeMenu = getActiveMenu();
 
   <button
     className="user-iconButton"
+    aria-label="Toggle Theme"
+    onClick={toggleTheme}
+  >
+    {isDarkMode ? (
+      <SunIcon className="user-heroIcon" />
+    ) : (
+      <MoonIcon className="user-heroIcon" />
+    )}
+  </button>
+
+  <button
+    className="user-iconButton"
     aria-label="Logout"
     onClick={() => setShowLogoutModal(true)}
   >
@@ -173,7 +180,7 @@ const activeMenu = getActiveMenu();
     <div className="user-menu-content">
       <ul className="user-menu-links">
         <li>
-          <Link to="/rental-section" className={`user-nav-link ${activeMenu === 'rent' ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Rentals</Link>
+          <Link to="/rental-section" className={`user-nav-link ${activeMenu === 'rental-section' ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Rentals</Link>
         </li>
         <li>
           <Link to="/post" className={`user-nav-link ${activeMenu === 'post' ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Post</Link>

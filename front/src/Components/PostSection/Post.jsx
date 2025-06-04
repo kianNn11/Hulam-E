@@ -6,6 +6,7 @@ import { XMarkIcon } from '@heroicons/react/24/solid';
 import { rentalAPI } from '../../services/api';
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import AlertMessage from '../Common/AlertMessage';
 
 const Post = ({ onClose }) => {
   const { user } = useAuth();
@@ -19,30 +20,42 @@ const Post = ({ onClose }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+  const [showSuccessCard, setShowSuccessCard] = useState(false);
+
+  const showAlert = (type, message) => {
+    setAlert({ show: true, type, message });
+    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 5000);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    console.log('Post submission attempt:', {
+      user: user,
+      isAuthenticated: !!user,
+      token: localStorage.getItem('authToken') ? 'present' : 'missing',
+      formData: formData,
+      hasImage: !!selectedImage
+    });
+    
     if (!user) {
-      setError('You must be logged in to create a post.');
+      showAlert('error', 'You must be logged in to create a post.');
       return;
     }
 
     // Validation
     if (!formData.title.trim() || !formData.price || !formData.location.trim() || !formData.description.trim()) {
-      setError('Please fill in all required fields.');
+      showAlert('error', 'Please fill in all required fields.');
       return;
     }
 
     if (isNaN(formData.price) || parseFloat(formData.price) <= 0) {
-      setError('Please enter a valid price.');
+      showAlert('error', 'Please enter a valid price.');
       return;
     }
 
     setLoading(true);
-    setError('');
 
     try {
       const submitData = new FormData();
@@ -55,9 +68,10 @@ const Post = ({ onClose }) => {
         submitData.append('image', selectedImage);
       }
 
-      const response = await rentalAPI.createRental(submitData);
+      await rentalAPI.createRental(submitData);
       
-      setSuccess('Post created successfully! Your item is now available for rent.');
+      // Show success card instead of alert
+      setShowSuccessCard(true);
       
       // Reset form
       setFormData({
@@ -69,19 +83,40 @@ const Post = ({ onClose }) => {
       setSelectedImage(null);
       setImagePreview(null);
 
-      // Redirect to rental section after a short delay
-      setTimeout(() => {
-        navigate('/rental-section');
-      }, 2000);
-
-    } catch (err) {
-      console.error('Error creating post:', err);
-      if (err.response?.data?.errors) {
-        const errors = err.response.data.errors;
-        const firstError = Object.values(errors)[0];
-        setError(firstError[0] || 'Failed to create post. Please try again.');
+    } catch (error) {
+      console.error('Error creating rental:', error);
+      
+      // Handle different types of errors
+      if (error.response?.status === 403) {
+        const data = error.response.data;
+        
+        // Handle suspended account with detailed restrictions
+        if (data.error === 'Account suspended' || error.restrictionDetails?.type === 'suspended') {
+          const details = error.restrictionDetails || data.restriction_details || {};
+          const actionMessage = details.blocked_action || details.blockedAction || 'posting items';
+          const contactInfo = details.contact_info || details.contactInfo || 'Please contact support for assistance.';
+          
+          showAlert('error', 
+            `Account Suspended: You cannot perform this action (${actionMessage}). ${contactInfo}`
+          );
+        } else if (data.error === 'Account deactivated') {
+          showAlert('error', 'Your account has been deactivated. Please contact support to reactivate your account.');
+        } else {
+          showAlert('error', data.message || 'You do not have permission to perform this action.');
+        }
+      } else if (error.response?.status === 422) {
+        const errorData = error.response.data;
+        if (errorData.errors) {
+          const firstError = Object.values(errorData.errors)[0];
+          const errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+          showAlert('error', errorMessage);
+        } else {
+          showAlert('error', errorData.message || 'Please check your input and try again.');
+        }
+      } else if (!error.response) {
+        showAlert('error', 'Network error. Please check your internet connection and try again.');
       } else {
-        setError(err.response?.data?.message || 'Failed to create post. Please try again.');
+        showAlert('error', 'Failed to create post. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -94,8 +129,8 @@ const Post = ({ onClose }) => {
       ...formData,
       [name]: value
     });
-    // Clear error when user starts typing
-    if (error) setError('');
+    // Clear alert when user starts typing
+    if (alert.show) setAlert({ show: false, type: '', message: '' });
   };
 
   const handleImageUpload = (e) => {
@@ -103,13 +138,13 @@ const Post = ({ onClose }) => {
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        setError('Please select a valid image file.');
+        showAlert('error', 'Please select a valid image file.');
         return;
       }
       
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        setError('Image size must be less than 5MB.');
+        showAlert('error', 'Image size must be less than 5MB.');
         return;
       }
 
@@ -122,7 +157,7 @@ const Post = ({ onClose }) => {
       };
       reader.readAsDataURL(file);
       
-      setError(''); // Clear any previous errors
+      setAlert({ show: false, type: '', message: '' }); // Clear any previous errors
     }
   };
 
@@ -136,6 +171,36 @@ const Post = ({ onClose }) => {
     }
   };
 
+  const handleViewPosts = () => {
+    navigate('/profile');
+  };
+
+  if (showSuccessCard) {
+    return (
+      <section className="rentalPostUp">
+        <div className="post-success-card">
+          <div className="success-icon">✅</div>
+          <h2>Post Created Successfully!</h2>
+          <p>Your item is now available for rent and will appear in the rental section.</p>
+          <div className="success-actions">
+            <button 
+              onClick={handleViewPosts} 
+              className="view-posts-btn"
+            >
+              View Here
+            </button>
+            <button 
+              onClick={() => setShowSuccessCard(false)} 
+              className="create-another-btn"
+            >
+              Create Another Post
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="rentalPostUp">
       <div className="post-header">
@@ -145,16 +210,12 @@ const Post = ({ onClose }) => {
         </div>
       </div>
 
-      {error && (
-        <div className="post-error-message">
-          <p>{error}</p>
-        </div>
-      )}
-
-      {success && (
-        <div className="post-success-message">
-          <p>{success}</p>
-        </div>
+      {alert.show && (
+        <AlertMessage 
+          type={alert.type} 
+          message={alert.message} 
+          onClose={() => setAlert({ show: false, type: '', message: '' })}
+        />
       )}
 
       <form onSubmit={handleSubmit} className='post-form'>

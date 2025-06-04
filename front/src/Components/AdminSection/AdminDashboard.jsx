@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './AdminDashboard.css';
-import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
-import { UserGroupIcon } from '@heroicons/react/24/solid';
+import { CurrencyDollarIcon, UserGroupIcon } from '@heroicons/react/24/solid';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -22,6 +21,50 @@ const AdminDashboard = () => {
   const [transactions, setTransactions] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imageErrors, setImageErrors] = useState(new Set());
+
+  // Safe image component to prevent flickering
+  const SafeImage = ({ src, alt, className, placeholder = null }) => {
+    const [hasError, setHasError] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const handleError = () => {
+      setHasError(true);
+      setIsLoading(false);
+    };
+
+    const handleLoad = () => {
+      setIsLoading(false);
+    };
+
+    if (hasError || !src) {
+      return (
+        <div className={`${className} placeholder-image`}>
+          {placeholder || <div className="placeholder-content">👤</div>}
+        </div>
+      );
+    }
+
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        onError={handleError}
+        onLoad={handleLoad}
+        loading="lazy"
+        style={{ display: isLoading ? 'none' : 'block' }}
+      />
+    );
+  };
+
+  // Handle image loading errors
+  const handleImageError = (imageId, fallbackSrc, event) => {
+    if (!imageErrors.has(imageId)) {
+      setImageErrors(prev => new Set([...prev, imageId]));
+      event.target.src = fallbackSrc;
+    }
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -150,13 +193,11 @@ const AdminDashboard = () => {
             {transactions.length > 0 ? (
               transactions.map((txn, index) => (
                 <div className="transactionItem" key={index}>
-                  <img 
-                    src={txn.image_url || '/placeholder-image.jpg'} 
-                    alt={txn.name} 
+                  <SafeImage
+                    src={txn.image_url}
+                    alt={txn.name || 'Transaction item'}
                     className="transactionImage"
-                    onError={(e) => {
-                      e.target.src = '/placeholder-image.jpg';
-                    }}
+                    placeholder={<div className="placeholder-content">📦</div>}
                   />
                   <div className="transactionDetails">
                     <span className="transactionName">{txn.name}</span>
@@ -182,13 +223,11 @@ const AdminDashboard = () => {
             {recentActivity.length > 0 ? (
               recentActivity.map((activity, index) => (
                 <div className="activityItem" key={index}>
-                  <img
-                    src={activity.profile_image_url || '/placeholder-avatar.jpg'}
-                    alt={activity.user_name}
+                  <SafeImage
+                    src={activity.profile_image_url}
+                    alt={activity.user_name || 'User avatar'}
                     className="activityProfileImage"
-                    onError={(e) => {
-                      e.target.src = '/placeholder-avatar.jpg';
-                    }}
+                    placeholder={<div className="placeholder-content">👤</div>}
                   />
                   <div className="activityDetails">
                     <p className="activityMessage">

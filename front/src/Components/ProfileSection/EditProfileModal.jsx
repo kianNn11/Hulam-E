@@ -3,10 +3,40 @@ import './EditProfileModal.css';
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const EditProfileModal = ({ onClose, profileData, user, onSave, loading }) => {
+  // Debug logging for data prefilling
+  console.log('EditProfileModal props:', {
+    profileData,
+    user: user ? {
+      name: user.name,
+      course_year: user.course_year,
+      birthday: user.birthday,
+      gender: user.gender,
+      social_link: user.social_link,
+      contact_number: user.contact_number,
+      bio: user.bio,
+      profile_picture: user.profile_picture ? '[Image Data]' : null
+    } : null
+  });
+
+  // Helper function to convert datetime to date format for input
+  const formatDateForInput = (dateValue) => {
+    if (!dateValue) return '';
+    try {
+      // Handle both datetime strings and date-only strings
+      const date = new Date(dateValue);
+      if (isNaN(date.getTime())) return '';
+      // Return in YYYY-MM-DD format required by HTML date input
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '';
+    }
+  };
+
   const [formData, setFormData] = useState({
     fullName: profileData?.fullName || user?.name || '',
     courseYear: profileData?.courseYear || user?.course_year || '',
-    birthday: profileData?.birthday || user?.birthday || '',
+    birthday: formatDateForInput(profileData?.birthday || user?.birthday),
     gender: profileData?.gender || user?.gender || '',
     socialLink: profileData?.socialLink || user?.social_link || '',
     contactNumber: profileData?.contactNumber || user?.contact_number || '',
@@ -20,14 +50,24 @@ const EditProfileModal = ({ onClose, profileData, user, onSave, loading }) => {
     setFormData({
       fullName: profileData?.fullName || user?.name || '',
       courseYear: profileData?.courseYear || user?.course_year || '',
-      birthday: profileData?.birthday || user?.birthday || '',
+      birthday: formatDateForInput(profileData?.birthday || user?.birthday),
       gender: profileData?.gender || user?.gender || '',
       socialLink: profileData?.socialLink || user?.social_link || '',
       contactNumber: profileData?.contactNumber || user?.contact_number || '',
       bio: profileData?.bio || user?.bio || '',
       profileImage: profileData?.profileImage || user?.profile_picture || null,
     });
-    setImagePreview(profileData?.profileImage || user?.profile_picture || null);
+    
+    // Set image preview, converting server paths to full URLs
+    const imageSource = profileData?.profileImage || user?.profile_picture;
+    if (imageSource) {
+      const previewSrc = imageSource.startsWith('/storage/') 
+        ? `http://localhost:8000${imageSource}`
+        : imageSource;
+      setImagePreview(previewSrc);
+    } else {
+      setImagePreview(null);
+    }
   }, [profileData, user]);
 
   const handleChange = (e) => {
@@ -36,6 +76,12 @@ const EditProfileModal = ({ onClose, profileData, user, onSave, loading }) => {
     if (type === 'file') {
       const file = files[0];
       if (!file) return;
+
+      console.log('File selected:', {
+        name: file.name,
+        size: file.size,
+        type: file.type
+      });
 
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
@@ -51,11 +97,17 @@ const EditProfileModal = ({ onClose, profileData, user, onSave, loading }) => {
 
       const reader = new FileReader();
       reader.onloadend = () => {
+        const base64Result = reader.result;
+        console.log('Image converted to base64:', {
+          size: base64Result.length,
+          preview: base64Result.substring(0, 50) + '...'
+        });
+        
         setFormData((prev) => ({
           ...prev,
-          [name]: reader.result, // base64 string
+          [name]: base64Result, // base64 string
         }));
-        setImagePreview(reader.result);
+        setImagePreview(base64Result);
       };
       reader.readAsDataURL(file);
     } else {
@@ -69,13 +121,20 @@ const EditProfileModal = ({ onClose, profileData, user, onSave, loading }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    console.log('Form submission data:', {
+      ...formData,
+      profileImage: formData.profileImage ? 
+        `[Base64 Image - ${formData.profileImage.length} chars]` : 
+        'null'
+    });
+    
     // Basic validation
     if (!formData.fullName.trim()) {
       alert('Full name is required');
       return;
     }
     
-    if (formData.contactNumber && !/^[\d\-\+\(\)\s]+$/.test(formData.contactNumber)) {
+    if (formData.contactNumber && !/^[\d\-+() ]+$/.test(formData.contactNumber)) {
       alert('Please enter a valid contact number');
       return;
     }
@@ -196,34 +255,98 @@ const EditProfileModal = ({ onClose, profileData, user, onSave, loading }) => {
             </label>
           </div>
 
-          <div className="formRow">
-            <label>
+          <div className="formRow profileImageRow">
+            <label className="profileImageLabel">
               Profile Image
-              <input 
-                type="file" 
-                name="profileImage" 
-                accept="image/*" 
-                onChange={handleChange}
-                disabled={loading}
-              />
-              <small>Max file size: 5MB. Supported formats: JPG, PNG, GIF</small>
-            </label>
-            {imagePreview && (
-              <div className="imagePreview">
-                <img src={imagePreview} alt="Profile preview" />
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    setFormData(prev => ({ ...prev, profileImage: null }));
-                    setImagePreview(null);
-                  }}
-                  className="removeImageBtn"
+              <div 
+                className="profileImageUploadArea"
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.currentTarget.classList.add('dragOver');
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.currentTarget.classList.remove('dragOver');
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.currentTarget.classList.remove('dragOver');
+                  
+                  const files = Array.from(e.dataTransfer.files);
+                  if (files.length > 0) {
+                    const file = files[0];
+                    const mockEvent = {
+                      target: {
+                        name: 'profileImage',
+                        type: 'file',
+                        files: [file]
+                      }
+                    };
+                    handleChange(mockEvent);
+                  }
+                }}
+              >
+                {imagePreview ? (
+                  <div className="currentImagePreview">
+                    <img 
+                      src={imagePreview} 
+                      alt="Profile preview"
+                      onError={(e) => {
+                        console.error('Image preview failed to load:', imagePreview);
+                        // Fall back to a default or hide the image
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                    <div className="imageActions">
+                      <button 
+                        type="button" 
+                        onClick={() => document.getElementById('profileImageInput').click()}
+                        className="changeImageBtn"
+                        disabled={loading}
+                      >
+                        Change Image
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, profileImage: null }));
+                          setImagePreview(null);
+                        }}
+                        className="removeImageBtn"
+                        disabled={loading}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div 
+                    className="uploadPrompt"
+                    onClick={() => document.getElementById('profileImageInput').click()}
+                  >
+                    <div className="uploadIcon">📸</div>
+                    <p className="uploadText">
+                      <strong>Click to upload</strong> or drag and drop
+                    </p>
+                    <p className="uploadSubtext">
+                      JPG, PNG, GIF up to 5MB
+                    </p>
+                  </div>
+                )}
+                <input 
+                  id="profileImageInput"
+                  type="file" 
+                  name="profileImage" 
+                  accept="image/*" 
+                  onChange={handleChange}
                   disabled={loading}
-                >
-                  Remove Image
-                </button>
+                  style={{ display: 'none' }}
+                />
               </div>
-            )}
+            </label>
           </div>
 
           <div className="modalButtons">

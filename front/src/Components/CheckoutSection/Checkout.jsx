@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../../Context/AuthContext';
 import { rentalAPI } from '../../services/api';
 import defaultImage from '../Assets/calculator.jpg';
+import AlertMessage from '../Common/AlertMessage';
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Checkout = () => {
   const [rentedItems, setRentedItems] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
   
   // Form state
   const [formData, setFormData] = useState({
@@ -22,6 +24,11 @@ const Checkout = () => {
     message: '',
     paymentMethod: 'cash_on_delivery'
   });
+
+  const showAlert = (type, message) => {
+    setAlert({ show: true, type, message });
+    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 5000);
+  };
 
   useEffect(() => {
     const storedItems = JSON.parse(localStorage.getItem('rentedItems')) || [];
@@ -101,19 +108,19 @@ const Checkout = () => {
   const handleCompleteRental = () => {
     // Validate form
     if (!formData.name.trim()) {
-      alert('Please enter your name');
+      showAlert('error', 'Please enter your name');
       return;
     }
     if (!formData.contactNumber.trim()) {
-      alert('Please enter your contact number');
+      showAlert('error', 'Please enter your contact number');
       return;
     }
     if (!formData.rentDuration.trim()) {
-      alert('Please enter rent duration');
+      showAlert('error', 'Please enter rent duration');
       return;
     }
     if (rentedItems.length === 0) {
-      alert('No items in cart');
+      showAlert('error', 'No items in cart');
       return;
     }
     
@@ -143,10 +150,17 @@ const Checkout = () => {
       const response = await rentalAPI.checkout(checkoutData);
       
       if (response.data.success) {
-        alert(`Checkout successful! Total: ₱${response.data.data.total_amount.toFixed(2)}`);
+        const { data } = response.data;
+        
+        if (data.earnings_updated) {
+          showAlert('success', `Payment successful! Total: ₱${data.total_amount.toFixed(2)}\n\nYour earnings have been updated immediately. Check your earnings page to see the new balance.`);
+        } else {
+          showAlert('success', `Checkout successful! Total: ₱${data.total_amount.toFixed(2)}\n\nYour rental request has been sent. You'll earn money once the owner approves and completes the transaction.`);
+        }
+        
         // Clear cart and form
-    setRentedItems([]);
-    localStorage.removeItem('rentedItems');
+        setRentedItems([]);
+        localStorage.removeItem('rentedItems');
         setFormData({
           name: user?.name || '',
           contactNumber: user?.contact_number || '',
@@ -154,12 +168,54 @@ const Checkout = () => {
           message: '',
           paymentMethod: 'cash_on_delivery'
         });
-    setShowModal(false);
-        navigate('/earnings');
+        setShowModal(false);
+        
+        // Navigate to earnings page if payment was completed
+        setTimeout(() => {
+          if (data.earnings_updated) {
+            navigate('/rentals');
+          } else {
+            navigate('/rentals');
+          }
+        }, 3000);
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      alert(error.response?.data?.message || 'Checkout failed. Please try again.');
+      
+      // Handle different types of errors with detailed messages
+      if (error.response?.status === 403) {
+        const data = error.response.data;
+        
+        // Handle suspended account with detailed restrictions
+        if (data.error === 'Account suspended' || error.restrictionDetails?.type === 'suspended') {
+          const details = error.restrictionDetails || data.restriction_details || {};
+          const actionMessage = details.blocked_action || details.blockedAction || 'checking out items';
+          const contactInfo = details.contact_info || details.contactInfo || 'Please contact support for assistance.';
+          
+          showAlert('error', 
+            `Account Suspended: You cannot perform this action (${actionMessage}). ${contactInfo}`
+          );
+        } else if (data.error === 'Account deactivated') {
+          showAlert('error', 'Your account has been deactivated. Please contact support to reactivate your account.');
+        } else {
+          showAlert('error', data.message || 'You do not have permission to perform this checkout.');
+        }
+      } else if (error.response?.status === 422) {
+        const errorData = error.response.data;
+        if (errorData.errors) {
+          const firstError = Object.values(errorData.errors)[0];
+          const errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+          showAlert('error', `Validation Error: ${errorMessage}`);
+        } else {
+          showAlert('error', errorData.message || 'Please check your input and try again.');
+        }
+      } else if (error.response?.status === 400) {
+        showAlert('error', error.response.data.message || 'Invalid checkout request. Please check your items and try again.');
+      } else if (!error.response) {
+        showAlert('error', 'Network error. Please check your internet connection and try again.');
+      } else {
+        showAlert('error', 'Checkout failed. Please try again or contact support if the problem persists.');
+      }
     } finally {
       setLoading(false);
     }
@@ -170,6 +226,15 @@ const Checkout = () => {
       <button className="login-back-button" onClick={() => navigate('/rental-section')}>
         <ArrowLeftIcon className="login-back-icon" />
       </button>
+
+      {alert.show && (
+        <AlertMessage 
+          type={alert.type} 
+          message={alert.message} 
+          onClose={() => setAlert({ show: false, type: '', message: '' })}
+          className="fixed-alert"
+        />
+      )}
 
       <div className="main-content">
         <div className="left-section">
@@ -255,7 +320,7 @@ const Checkout = () => {
 
         <div className="right-section">
           <div className="card summary-card">
-            <h2 className="section-title">Payment Summary</h2>
+            <h2 className="section-title">Rental Summary</h2>
             <div className="summary-details">
               <div className="summary-row">
                 <span>Sub Total</span>
@@ -281,7 +346,12 @@ const Checkout = () => {
                   checked={formData.paymentMethod === 'cash_on_delivery'}
                   onChange={handlePaymentMethodChange}
                 />
-                Cash on Delivery
+                <div>
+                  <strong>Cash on Delivery</strong>
+                  <p style={{ fontSize: '12px', color: '#666', margin: '2px 0 0 0' }}>
+                    Payment pending - Requires owner approval before earning
+                  </p>
+                </div>
               </label>
               <label className="payment-option">
                 <input 
@@ -291,7 +361,12 @@ const Checkout = () => {
                   checked={formData.paymentMethod === 'gcash'}
                   onChange={handlePaymentMethodChange}
                 />
-                Gcash
+                <div>
+                  <strong>GCash</strong>
+                  <p style={{ fontSize: '12px', color: '#059669', margin: '2px 0 0 0' }}>
+                    ✓ Pay using GCash number shown in item details
+                  </p>
+                </div>
               </label>
             </div>
 
@@ -317,9 +392,17 @@ const Checkout = () => {
               <p><strong>Renter:</strong> {formData.name}</p>
               <p><strong>Contact:</strong> {formData.contactNumber}</p>
               <p><strong>Duration:</strong> {formData.rentDuration}</p>
-              <p><strong>Payment Method:</strong> {formData.paymentMethod === 'cash_on_delivery' ? 'Cash on Delivery' : 'Gcash'}</p>
+              <p><strong>Payment Method:</strong> {formData.paymentMethod === 'cash_on_delivery' ? 'Cash on Delivery' : 'GCash'}</p>
               <p><strong>Total Amount:</strong> ₱{total.toFixed(2)}</p>
               <p><strong>Items:</strong> {rentedItems.length} item(s)</p>
+              {formData.paymentMethod === 'gcash' && (
+                <div style={{ marginTop: '12px', padding: '12px', background: '#f0f9ff', borderRadius: '8px', border: '1px solid #bfdbfe' }}>
+                  <p style={{ margin: '0', fontSize: '14px', color: '#1e40af' }}>
+                    <strong>Note:</strong> For GCash payment, use the GCash number shown in the item details. 
+                    After payment, contact the owner to confirm the transaction.
+                  </p>
+                </div>
+              )}
             </div>
             <div className="modal-buttons">
               <button 

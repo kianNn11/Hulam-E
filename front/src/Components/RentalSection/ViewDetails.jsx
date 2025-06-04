@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './ViewDetails.css';
 import calculatorImage from '../Assets/calculator.jpg';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext';
+import AlertMessage from '../Common/AlertMessage';
 
 const ViewDetails = ({ rental, onClose, getImageUrl }) => {
   const navigate = useNavigate();
+  const { user, isLoggedIn } = useAuth();
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
 
   if (!rental) {
     return (
@@ -16,12 +20,42 @@ const ViewDetails = ({ rental, onClose, getImageUrl }) => {
     );
   }
 
+  const showAlert = (type, message) => {
+    setAlert({ show: true, type, message });
+    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 5000);
+  };
+
   const handleRentNow = () => {
+    if (!isLoggedIn) {
+      showAlert('warning', 'Please log in to rent this item.');
+      return;
+    }
+
+    // Check if user is trying to rent their own item
+    if (user && rental.user_id === user.id) {
+      showAlert('error', 'You cannot rent your own item.');
+      return;
+    }
+
+    // Check if user account is suspended (client-side check)
+    if (user && user.verification_status === 'suspended') {
+      showAlert('error', 'Account Suspended: You cannot request items to rent while your account is suspended. Please contact support for assistance.');
+      return;
+    }
+
+    // Check if user account is deactivated (client-side check)
+    if (user && user.verification_status === 'inactive') {
+      showAlert('error', 'Your account has been deactivated. Please contact support to reactivate your account.');
+      return;
+    }
+
     // Close the modal first
     onClose();
     // Then navigate to checkout with the rental data
     navigate('/checkout', { state: { rental } });
   };
+
+  const isOwnItem = user && rental.user_id === user.id;
 
   return (
     <div className="view-details-page">
@@ -29,6 +63,14 @@ const ViewDetails = ({ rental, onClose, getImageUrl }) => {
         <div className="view-back-container">
           <ArrowLeftIcon className='view-back-btn' onClick={onClose}/>
         </div>
+
+        {alert.show && (
+          <AlertMessage 
+            type={alert.type} 
+            message={alert.message} 
+            onClose={() => setAlert({ show: false, type: '', message: '' })}
+          />
+        )}
 
         <div className="item-info-container">
           <div className="view-img-container">
@@ -73,6 +115,14 @@ const ViewDetails = ({ rental, onClose, getImageUrl }) => {
                   <span><br/>{rental.user.contact_number}</span>
                 )}
               </span>
+
+              <span className="label">GCash Number</span>
+              <span className="info-input">
+                {rental.user?.contact_number || '09XXXXXXXXX'}
+                <small style={{ display: 'block', color: '#666', marginTop: '4px' }}>
+                  Use this number for GCash payments
+                </small>
+              </span>
               
               <span className="label">Description</span>
               <span className="info-input">{rental.description}</span>
@@ -87,7 +137,11 @@ const ViewDetails = ({ rental, onClose, getImageUrl }) => {
               </span>
             </div>
 
-            {rental.status === 'available' ? (
+            {isOwnItem ? (
+              <button className="rent-now-btn disabled" disabled>
+                This is Your Item
+              </button>
+            ) : rental.status === 'available' ? (
               <button className="rent-now-btn" onClick={handleRentNow}>
                 Rent Now
               </button>

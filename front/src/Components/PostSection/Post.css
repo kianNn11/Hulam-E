@@ -1,11 +1,22 @@
+.rentalPostUp {
+  background-color: var(--bg-primary);
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  padding-top: 120px; /* Account for fixed navbar height */
+  transition: background-color 0.3s ease;
+}
+
 .rentalPostPopUp {
-  background-color: #f9fafb;
+  background-color: var(--bg-primary);
   font-family: 'Poppins', sans-serif;
   overflow: hidden; /* Prevent scrolling */
   width: 100%; /* Make sure it's responsive */
   height: 100vh; /* Ensure the height covers the full viewport */
   position: relative; /* Ensure positioning context */
   overflow: hidden;
+  transition: background-color 0.3s ease;
 }
 
 .post-header {
@@ -14,14 +25,13 @@
   left: 0;
   width: 100%; /* Ensure header width is responsive */
   height: 78px;
-  background-color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 16px;
   font-weight: 400;
-  padding: 0 30px;
-  margin-top: 78px;
+  padding: 0 10px;
+  margin-top: 0; /* Remove margin-top since container has padding-top */
   overflow: hidden;
 }
 
@@ -41,11 +51,11 @@
 
 .createaPost {
   font-size: 36px;
-  background: linear-gradient(to left, #1877F2 41%, #5998F6 100%);
+  background: linear-gradient(to left, #1877F2 41%, var(--accent-color) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.4);
+  text-shadow: 0px 1px 1px var(--shadow);
 }
 
 .post-form {
@@ -79,7 +89,7 @@
 }
 
 .post-image {
-  border: 1px solid #111827;
+  border: 2px solid var(--text-primary);
   border-radius: 30px;
   flex-direction: column;
   flex-grow: 1;
@@ -88,13 +98,14 @@
   display: flex;
   overflow: hidden;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.3s ease;
   width: 327px;
   height: 374px;
 }
 
-.image:hover {
-  background-color: #f3f4f6;
+.post-image:hover {
+  background-color: var(--bg-secondary);
+  border-color: var(--accent-color);
 }
 
 .post-div5 {
@@ -124,7 +135,7 @@
 }
 
 .upload1Photoonly {
-  color: #e5e7eb;
+  color: var(--text-secondary);
   text-align: center;
   margin-top: 11px;
   font-family: Poppins, sans-serif;
@@ -144,19 +155,20 @@
 }
 
 .post-div6 {
-  color: #111827;
+  color: var(--text-primary);
   align-self: stretch;
   margin-top: -30px;
   font-family: Poppins, sans-serif;
   font-size: 20px;
   font-weight: 500;
   padding-bottom: 15px;
+  transition: color 0.3s ease;
 }
 
 .post-btn {
   color: #fff;
   white-space: nowrap;
-  background-color: #5998f6;
+  background-color: var(--accent-color);
   border: none;
   border-radius: 10px;
   padding: 5px 40px;
@@ -164,9 +176,14 @@
   font-size: 24px;
   font-weight: 700;
   display: block;
-  margin:   0px auto 40px auto;
+  margin: 0px auto 40px auto;
   text-align: center;
   margin-left: 700px;
+  transition: background-color 0.3s ease;
+}
+
+.post-btn:hover {
+  background-color: var(--accent-hover);
 }
 
 .formInput {
@@ -175,6 +192,7 @@
   background: transparent;
   font-family: Poppins, sans-serif;
   font-size: 16px;
+  color: var(--text-primary);
 }
 
 .floating-input {
@@ -184,27 +202,34 @@
 }
 
 .floating-input input,
-  .floating-input textarea {
-    width: 100%;
-    border: 1px solid #111827;
-    border-radius: 10px;
-    padding: 20px 12px 8px;
-    font-family: Poppins, sans-serif;
-    font-size: 16px;
-    background-color: transparent;
-    outline: none;
+.floating-input textarea {
+  width: 100%;
+  border: 2px solid var(--text-primary);
+  border-radius: 10px;
+  padding: 20px 12px 8px;
+  font-family: Poppins, sans-serif;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .floating-input label {
   position: absolute;
   left: 12px;
   top: 16px;
-  background-color: #f9fafb;
+  background-color: var(--input-bg);
   padding: 0 4px;
   font-size: 16px;
-  color: #111827;
+  color: var(--text-secondary);
   pointer-events: none;
   transition: 0.2s ease all;
+}
+
+.floating-input input:focus,
+.floating-input textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .floating-input input:focus + label,
@@ -213,7 +238,8 @@
 .floating-input textarea:not(:placeholder-shown) + label {
   top: 4px;
   font-size: 12px;
-  color: #1877F2;
+  color: var(--accent-color);
+  background-color: var(--input-bg);
 }
 
 .requiredField {
@@ -267,8 +293,9 @@
   height: 150px;
   object-fit: cover;
   border-radius: 8px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--text-primary);
   margin-bottom: 10px;
+  transition: border-color 0.3s ease;
 }
 
 .remove-image-btn {
@@ -320,7 +347,7 @@
 /* Disabled Input States */
 input:disabled,
 textarea:disabled {
-  background-color: #f9fafb;
+  background-color: var(--bg-secondary);
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -334,5 +361,121 @@ textarea:disabled {
   
   .remove-image-btn {
     right: calc(50% - 85px);
+  }
+}
+
+/* Post Success Card */
+.post-success-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: 40px auto; /* Back to original margin since container has padding-top */
+  border: 2px solid #0ea5e9;
+}
+
+.success-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: bounce 0.6s ease-in-out;
+}
+
+.post-success-card h2 {
+  color: #0369a1;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  font-family: 'Inter', sans-serif;
+}
+
+.post-success-card p {
+  color: #64748b;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 32px;
+  max-width: 400px;
+}
+
+.success-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.view-posts-btn, .create-another-btn {
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  min-width: 140px;
+}
+
+.view-posts-btn {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.view-posts-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+.create-another-btn {
+  background: white;
+  color: #0369a1;
+  border: 2px solid #0ea5e9;
+}
+
+.create-another-btn:hover {
+  background: #f0f9ff;
+  transform: translateY(-2px);
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Responsive styles for success card */
+@media (max-width: 768px) {
+  .rentalPostUp {
+    padding-top: 78px; /* Maintain navbar spacing on mobile */
+  }
+  
+  .post-success-card {
+    margin: 20px 16px; /* Reduce margin and add horizontal padding on mobile */
+    padding: 30px 20px; /* Reduce padding on mobile */
+    max-width: none; /* Allow full width with margins */
+  }
+  
+  .post-success-card h2 {
+    font-size: 24px; /* Slightly smaller heading on mobile */
+  }
+  
+  .success-actions {
+    flex-direction: column; /* Stack buttons vertically on mobile */
+    gap: 12px;
+  }
+  
+  .view-posts-btn, .create-another-btn {
+    width: 100%; /* Full width buttons on mobile */
+    min-width: auto;
   }
 }

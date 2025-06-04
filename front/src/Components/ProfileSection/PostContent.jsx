@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './PostContent.css';
 import { PhoneIcon, AcademicCapIcon, EnvelopeIcon } from "@heroicons/react/24/solid";
 import { Venus, Cake, User } from "lucide-react";
-import { UserCircleIcon, LinkIcon } from "@heroicons/react/24/outline";
+import { LinkIcon, EyeIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from 'react-router-dom';
+import { rentalAPI } from '../../services/api';
+import AlertMessage from '../Common/AlertMessage';
 
 const PostContent = ({ profileData, user }) => {
+  const [userRentals, setUserRentals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+  const [selectedRental, setSelectedRental] = useState(null);
+  const [showRentalModal, setShowRentalModal] = useState(false);
+
   // Use user data as fallback for profileData
   const displayData = {
     fullName: profileData?.fullName || user?.name || 'Not provided',
@@ -18,6 +26,30 @@ const PostContent = ({ profileData, user }) => {
     profileImage: profileData?.profileImage || user?.profile_picture || null,
     email: user?.email || 'Not provided'
   };
+
+  const showAlert = useCallback((type, message) => {
+    setAlert({ show: true, type, message });
+    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 5000);
+  }, []);
+
+  const fetchUserRentals = useCallback(async () => {
+    if (!user?.id) return;
+    
+    try {
+      setLoading(true);
+      const response = await rentalAPI.getRentals(`?user_id=${user.id}`);
+      setUserRentals(response.data.data || []);
+    } catch (error) {
+      console.error('Error fetching user rentals:', error);
+      showAlert('error', 'Failed to load your rental posts.');
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id, showAlert]);
+
+  useEffect(() => {
+    fetchUserRentals();
+  }, [fetchUserRentals]);
 
   // Format birthday for better display
   const formatBirthday = (birthday) => {
@@ -34,9 +66,45 @@ const PostContent = ({ profileData, user }) => {
     }
   };
 
+  const getImageUrl = (rental) => {
+    if (rental.image) {
+      if (rental.image.startsWith('http')) {
+        return rental.image;
+      }
+      return `http://localhost:8000/storage/${rental.image}`;
+    }
+    return '/default-rental-image.jpg';
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const handleViewRental = (rental) => {
+    setSelectedRental(rental);
+    setShowRentalModal(true);
+  };
+
+  const closeRentalModal = () => {
+    setShowRentalModal(false);
+    setSelectedRental(null);
+  };
+
   return (
     <main className="postContent">
       <section className="contentSection">
+        {alert.show && (
+          <AlertMessage 
+            type={alert.type} 
+            message={alert.message} 
+            onClose={() => setAlert({ show: false, type: '', message: '' })}
+          />
+        )}
+
         <div className="contentColumns">
 
           {/* About Section */}
@@ -150,23 +218,61 @@ const PostContent = ({ profileData, user }) => {
           {/* Posts Section */}
           <div className="postsColumn">
             <div className="postsContainer">
-              <h2 className="sectionTitle">Posts</h2>
+              <div className="posts-header">
+                <h2 className="sectionTitle">Your Rental Posts ({userRentals.length})</h2>
+                <Link to="/post" className="add-post-btn">+ Add New Post</Link>
+              </div>
 
-              <div className="postItem">
-                <div className="notificationOutline">
-                  <UserCircleIcon className="postIcon" />
-                  <p className="postNotification">
-                    You posted in <strong>Rental.</strong>{" "}
-                    <Link to="/post/1" className="viewPostLink">View Post here.</Link>
-                  </p>
+              {loading ? (
+                <div className="loading-state">
+                  <div className="loading-spinner"></div>
+                  <p>Loading your posts...</p>
                 </div>
-              </div>
-
-              {/* Placeholder for future posts */}
-              <div className="emptyState">
-                <p>No recent posts to display</p>
-                <Link to="/post" className="createPostLink">Create your first post</Link>
-              </div>
+              ) : userRentals.length > 0 ? (
+                <div className="rentals-list">
+                  {userRentals.map((rental) => (
+                    <div key={rental.id} className="rental-list-item">
+                      <div className="rental-mini-image">
+                        <img 
+                          src={getImageUrl(rental)} 
+                          alt={rental.title}
+                          onError={(e) => {
+                            e.target.src = '/default-rental-image.jpg';
+                          }}
+                        />
+                        <div className={`mini-status-badge status-${rental.status}`}>
+                          {rental.status === 'available' ? '✓' : rental.status === 'rented' ? '✗' : '⏸'}
+                        </div>
+                      </div>
+                      
+                      <div className="rental-list-content">
+                        <h4 className="rental-list-title">{rental.title}</h4>
+                        <div className="rental-list-details">
+                          <span className="rental-list-price">₱{parseFloat(rental.price).toFixed(2)}</span>
+                          <span className="rental-list-date">{formatDate(rental.created_at)}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="rental-list-actions">
+                        <button 
+                          onClick={() => handleViewRental(rental)}
+                          className="mini-view-btn"
+                          title="View rental details"
+                        >
+                          <EyeIcon className="mini-action-icon" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <div className="empty-icon">📝</div>
+                  <h3>No rental posts yet</h3>
+                  <p>You haven't posted any items for rent yet. Start sharing your items with fellow students!</p>
+                  <Link to="/post" className="create-post-btn">Create Your First Post</Link>
+                </div>
+              )}
 
             </div>
           </div>
@@ -174,25 +280,68 @@ const PostContent = ({ profileData, user }) => {
         </div>
       </section>
 
-      {/* Profile Summary Card */}
-      {displayData.profileImage && (
-        <div className="profileSummary">
-          <div className="profileSummaryCard">
-            <img 
-              src={displayData.profileImage} 
-              alt={`${displayData.fullName}'s profile`} 
-              className="profileSummaryImage"
-            />
-            <div className="profileSummaryInfo">
-              <h3>{displayData.fullName}</h3>
-              <p>{displayData.courseYear}</p>
-              {user?.verified && (
-                <span className="verifiedBadge">✓ Verified Student</span>
-              )}
+      {/* Rental Details Modal */}
+      {showRentalModal && selectedRental && (
+        <div className="rental-modal-overlay" onClick={closeRentalModal}>
+          <div className="rental-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="rental-modal-header">
+              <h3>Rental Details</h3>
+              <button className="rental-modal-close" onClick={closeRentalModal}>
+                <XMarkIcon className="close-icon" />
+              </button>
+            </div>
+
+            <div className="rental-modal-body">
+              <div className="rental-modal-image">
+                <img 
+                  src={getImageUrl(selectedRental)} 
+                  alt={selectedRental.title}
+                  onError={(e) => {
+                    e.target.src = '/default-rental-image.jpg';
+                  }}
+                />
+                <div className={`modal-status-badge status-${selectedRental.status}`}>
+                  {selectedRental.status}
+                </div>
+              </div>
+
+              <div className="rental-modal-details">
+                <h2 className="modal-title">{selectedRental.title}</h2>
+                <p className="modal-price">₱{parseFloat(selectedRental.price).toFixed(2)}</p>
+                
+                <div className="modal-info-grid">
+                  <div className="modal-info-item">
+                    <span className="modal-label">Status</span>
+                    <span className="modal-value">{selectedRental.status === 'available' ? 'Available for Rent' : selectedRental.status === 'rented' ? 'Currently Rented' : 'Unavailable'}</span>
+                  </div>
+                  
+                  <div className="modal-info-item">
+                    <span className="modal-label">Location</span>
+                    <span className="modal-value">{selectedRental.location}</span>
+                  </div>
+                  
+                  <div className="modal-info-item">
+                    <span className="modal-label">Posted Date</span>
+                    <span className="modal-value">
+                      {new Date(selectedRental.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                  
+                  <div className="modal-info-item modal-description">
+                    <span className="modal-label">Description</span>
+                    <p className="modal-value modal-description-text">{selectedRental.description}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
+
     </main>
   );
 };

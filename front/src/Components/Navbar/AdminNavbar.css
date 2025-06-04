@@ -4,13 +4,14 @@
     align-items: center; /* Vertically center children */
     justify-content: space-between;
     
-    background-color: #fff;
+    background-color: var(--navbar-bg);
     position: relative;
     z-index: 100;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);   
+    box-shadow: 0 2px 4px var(--shadow);   
     height: 78px; /* 👈 Add fixed height for vertical centering to work */
     margin: 0 auto; /* Center the navbar */
     max-width: 100%; /* Set a max width for the navbar */
+    transition: background-color 0.3s ease;
 }
 
 .admin-nav-logo {
@@ -47,7 +48,7 @@
   font-size: 16px;
   background: none;
   border: none;
-  color: #111827;
+  color: var(--text-primary);
   cursor: pointer;
   padding: 0;
   text-decoration: none;
@@ -55,12 +56,12 @@
 }
 
 .admin-nav-link:hover {
-  color: #5998F6;
+  color: var(--accent-color);
 }
 
 .admin-nav-link.active {
-  color: #5998F6;
-    border-bottom: 3px solid #5998F6;
+  color: var(--accent-color);
+    border-bottom: 3px solid var(--accent-color);
 }
 
 .admin-iconGroup {
@@ -80,27 +81,35 @@
 }
 
 .admin-heroIcon:hover {
-  color: #5998F6;
+  color: var(--accent-color);
 }
 
 
 .admin-heroIcon {
   width: 30px;
   height: 30px;
-  color: #111827;
+  color: var(--text-primary);
   transition: color 0.2s ease;
+  /* ✅ Fix icon flickering */
+  flex-shrink: 0;
+  display: block;
+  position: relative;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .iconButton:hover .heroIcon {
-  color: #5998F6; 
+  color: var(--accent-color); 
 }
 
 .iconButton:active .heroIcon {
-  color: #5998F6; 
+  color: var(--accent-color); 
 }
 
 .iconButton.active .heroIcon {
-  color: #5998F6;
+  color: var(--accent-color);
 }
 
 /* Modal styles */
@@ -118,12 +127,14 @@
 }
 
 .admin-modal {
-  background: white;
+  background: var(--modal-bg);
+  color: var(--text-primary);
   padding: 1.5rem 2rem;
   border-radius: 10px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 12px var(--shadow);
   text-align: center;
   width: 300px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .admin-modal-buttons {
@@ -133,12 +144,17 @@
 }
 
 .admin-confirm-btn {
-  background-color: #5998F6;
+  background-color: var(--accent-color);
   color: white;
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.admin-confirm-btn:hover {
+  background-color: var(--accent-hover);
 }
 
 .admin-cancel-btn {

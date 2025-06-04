@@ -57,6 +57,15 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request->email)->firstOrFail();
+        
+        // Check if user account is deactivated
+        if ($user->verification_status === 'inactive') {
+            return response()->json([
+                'error' => 'Account deactivated',
+                'message' => 'Your account has been deactivated. Please contact support to reactivate your account.'
+            ], 403);
+        }
+        
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

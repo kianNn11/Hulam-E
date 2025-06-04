@@ -21,6 +21,41 @@ const UserManagement = () => {
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState('');
 
+  // Safe image component to prevent flickering
+  const SafeImage = ({ src, alt, className, placeholder = null }) => {
+    const [hasError, setHasError] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const handleError = () => {
+      setHasError(true);
+      setIsLoading(false);
+    };
+
+    const handleLoad = () => {
+      setIsLoading(false);
+    };
+
+    if (hasError || !src) {
+      return (
+        <div className={`${className} placeholder-image`}>
+          {placeholder || <div className="placeholder-content">👤</div>}
+        </div>
+      );
+    }
+
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        onError={handleError}
+        onLoad={handleLoad}
+        loading="lazy"
+        style={{ display: isLoading ? 'none' : 'block' }}
+      />
+    );
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -69,8 +104,25 @@ const UserManagement = () => {
         setUsers(prev => prev.filter(user => user.id !== actionUser.id));
         setNotification(`User ${actionUser.name} has been deleted.`);
       } else {
-        // For Suspend/Deactivate, update user status
-        const newStatus = confirmAction === 'Suspend' ? 'suspended' : 'inactive';
+        // Handle status changes for Suspend/Resuspend/Deactivate/Reactivate
+        let newStatus;
+        switch (confirmAction) {
+          case 'Suspend':
+            newStatus = 'suspended';
+            break;
+          case 'Resuspend':
+            newStatus = 'suspended';
+            break;
+          case 'Deactivate':
+            newStatus = 'inactive';
+            break;
+          case 'Reactivate':
+            newStatus = 'active';
+            break;
+          default:
+            newStatus = 'active';
+        }
+        
         await axios.put(`http://localhost:8000/api/admin/users/${actionUser.id}/status`, {
           status: newStatus
         }, {
@@ -81,10 +133,10 @@ const UserManagement = () => {
         
         setUsers(prev => prev.map(user => 
           user.id === actionUser.id 
-            ? { ...user, status: newStatus }
+            ? { ...user, status: newStatus, verification_status: newStatus }
             : user
         ));
-        setNotification(`User ${actionUser.name} has been ${confirmAction.toLowerCase()}ed.`);
+        setNotification(`User ${actionUser.name} has been ${confirmAction.toLowerCase()}d.`);
       }
     } catch (error) {
       console.error(`Error performing ${confirmAction}:`, error);
@@ -100,7 +152,7 @@ const UserManagement = () => {
       case 'verified': 
       case 'active': 
         return <span className="badge verified">
-          <CheckCircleIcon className="icon" /> Verified
+          <CheckCircleIcon className="icon" /> Active
         </span>
       case 'pending': 
       case 'unverified':
@@ -109,11 +161,11 @@ const UserManagement = () => {
         </span>
       case 'rejected': 
       case 'suspended':
-        return <span className="badge rejected">
-          <XCircleIcon className="icon" /> Rejected
+        return <span className="badge suspended">
+          <XCircleIcon className="icon" /> Suspended
         </span>
       case 'inactive':
-        return <span className="badge not-verified">
+        return <span className="badge inactive">
           <NoSymbolIcon className="icon" /> Inactive
         </span>
       default: 
@@ -121,6 +173,64 @@ const UserManagement = () => {
           <NoSymbolIcon className="icon" /> Not Verified
         </span>
     }
+  };
+
+  // Helper function to get action buttons based on user status
+  const getActionButtons = (user) => {
+    const currentStatus = user.verification_status || user.status;
+    const buttons = [];
+
+    // Always show View button
+    buttons.push(
+      <button key="view" className="view-button" onClick={() => handleViewDetails(user)}>
+        <EyeIcon className="icon" /> View
+      </button>
+    );
+
+    // Don't show action buttons for admin users
+    if (user.role === 'admin') {
+      return buttons;
+    }
+
+    // Suspend/Reactivate button for suspended users
+    if (currentStatus === 'suspended') {
+      buttons.push(
+        <button key="reactivate-suspend" className="reactivate-button" onClick={() => openConfirmModal(user, 'Reactivate')}>
+          <CheckCircleIcon className="icon" /> Reactivate
+        </button>
+      );
+    } else {
+      buttons.push(
+        <button key="suspend" className="suspend-button" onClick={() => openConfirmModal(user, 'Suspend')}>
+          <UserMinusIcon className="icon" /> Suspend
+        </button>
+      );
+    }
+
+    // Deactivate/Reactivate button for inactive users
+    if (currentStatus === 'inactive') {
+      buttons.push(
+        <button key="reactivate-inactive" className="reactivate-button" onClick={() => openConfirmModal(user, 'Reactivate')}>
+          <CheckCircleIcon className="icon" /> Reactivate
+        </button>
+      );
+    } else if (currentStatus !== 'suspended') {
+      // Only show deactivate if user is not already suspended
+      buttons.push(
+        <button key="deactivate" className="deactivate-button" onClick={() => openConfirmModal(user, 'Deactivate')}>
+          <LockClosedIcon className="icon" /> Deactivate
+        </button>
+      );
+    }
+
+    // Always show Delete button for non-admin users
+    buttons.push(
+      <button key="delete" className="delete-button" onClick={() => openConfirmModal(user, 'Delete')}>
+        <TrashIcon className="icon" /> Delete
+      </button>
+    );
+
+    return buttons;
   };
 
   const filteredUsers = users.filter((user) =>
@@ -172,34 +282,17 @@ const UserManagement = () => {
         filteredUsers.map((user) => (
           <div className="user-row" key={user.id}>
             <div className="user-name">
-              <img 
+              <SafeImage 
                 src={user.profile_picture_url || '/placeholder-avatar.jpg'} 
                 alt="Profile" 
                 className="profile-pic"
-                onError={(e) => {
-                  e.target.src = '/placeholder-avatar.jpg';
-                }}
+                placeholder={<div className="placeholder-content">👤</div>}
               />
               <span>{user.name}</span>
             </div>
             <div className="user-status">{renderStatusBadge(user.verification_status || user.status)}</div>
             <div className="user-actions">
-              <button className="view-button" onClick={() => handleViewDetails(user)}>
-                <EyeIcon className="icon" /> View
-              </button>
-              {user.role !== 'admin' && (
-                <>
-                  <button className="suspend-button" onClick={() => openConfirmModal(user, 'Suspend')}>
-                    <UserMinusIcon className="icon" /> Suspend
-                  </button>
-                  <button className="deactivate-button" onClick={() => openConfirmModal(user, 'Deactivate')}>
-                    <LockClosedIcon className="icon" /> Deactivate
-                  </button>
-                  <button className="delete-button" onClick={() => openConfirmModal(user, 'Delete')}>
-                    <TrashIcon className="icon" /> Delete
-                  </button>
-                </>
-              )}
+              {getActionButtons(user)}
             </div>
           </div>
         ))
@@ -212,13 +305,11 @@ const UserManagement = () => {
             <h2>User Details</h2>
 
             <div className="user-profile-section">
-              <img 
+              <SafeImage 
                 src={selectedUser.profile_picture_url || '/placeholder-avatar.jpg'} 
                 alt="Profile" 
                 className="modal-profile-pic"
-                onError={(e) => {
-                  e.target.src = '/placeholder-avatar.jpg';
-                }}
+                placeholder={<div className="placeholder-content">👤</div>}
               />
             </div>
 
@@ -257,18 +348,12 @@ const UserManagement = () => {
               <div className="documents">
                 <h3>Verification Document</h3>
                 <div>
-                  <img 
+                  <SafeImage 
                     src={selectedUser.verification_document_url} 
                     alt="Verification Document" 
                     className="document-preview"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
-                    }}
+                    placeholder={<div className="placeholder-content">📄</div>}
                   />
-                  <div style={{ display: 'none', padding: '20px', textAlign: 'center', border: '1px solid #ddd' }}>
-                    Document could not be loaded
-                  </div>
                   <a href={selectedUser.verification_document_url} target="_blank" rel="noreferrer">
                     View Full Document
                   </a>

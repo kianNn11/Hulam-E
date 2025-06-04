@@ -3,6 +3,7 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 import { Link, useNavigate } from 'react-router-dom'; 
 import './Login.css'
 import { useAuth } from "../../Context/AuthContext";
+import AlertMessage from "../Common/AlertMessage";
 
 const ForgotPasswordModal = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -11,12 +12,15 @@ const ForgotPasswordModal = ({ onClose }) => {
     confirmPassword: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+
+  const showAlert = (type, message) => {
+    setAlert({ show: true, type, message });
+    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 5000);
+  };
 
   const handleChange = (e) => {
-    setError('');
-    setSuccess('');
+    setAlert({ show: false, type: '', message: '' });
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -25,22 +29,47 @@ const ForgotPasswordModal = ({ onClose }) => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const validateForm = () => {
     const { username, newPassword, confirmPassword } = formData;
 
-    if (!username || !newPassword || !confirmPassword) {
-      setError('All fields are required.');
-      return;
+    if (!username.trim()) {
+      showAlert('error', 'Username is required.');
+      return false;
     }
+    
+    if (!newPassword) {
+      showAlert('error', 'New password is required.');
+      return false;
+    }
+    
+    if (newPassword.length < 8) {
+      showAlert('error', 'Password must be at least 8 characters long.');
+      return false;
+    }
+    
+    if (!confirmPassword) {
+      showAlert('error', 'Please confirm your new password.');
+      return false;
+    }
+    
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match.');
-      return;
+      showAlert('error', 'Passwords do not match.');
+      return false;
     }
 
+    return true;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+
+    const { username, newPassword } = formData;
     const savedUserData = JSON.parse(localStorage.getItem('userData'));
+    
     if (!savedUserData || savedUserData.username !== username) {
-      setError('Username not found.');
+      showAlert('error', 'Username not found. Please check your username.');
       return;
     }
 
@@ -48,10 +77,10 @@ const ForgotPasswordModal = ({ onClose }) => {
     const updatedUserData = { ...savedUserData, password: newPassword };
     localStorage.setItem('userData', JSON.stringify(updatedUserData));
 
-    setSuccess('Password updated successfully! You can now login.');
+    showAlert('success', 'Password updated successfully! You can now login.');
     setFormData({ username: '', newPassword: '', confirmPassword: '' });
 
-    // Optionally close modal after some delay
+    // Close modal after delay
     setTimeout(() => onClose(), 2000);
   };
 
@@ -59,6 +88,15 @@ const ForgotPasswordModal = ({ onClose }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container" onClick={e => e.stopPropagation()}>
         <h2>Reset Password</h2>
+        
+        {alert.show && (
+          <AlertMessage 
+            type={alert.type} 
+            message={alert.message} 
+            onClose={() => setAlert({ show: false, type: '', message: '' })}
+          />
+        )}
+        
         <form onSubmit={handleSubmit} className="modal-form">
           <input
             type="text"
@@ -92,7 +130,7 @@ const ForgotPasswordModal = ({ onClose }) => {
           </div>
 
           <input
-            type="password" // Confirm Password field doesn't toggle
+            type="password"
             name="confirmPassword"
             placeholder="Confirm New Password"
             value={formData.confirmPassword}
@@ -100,8 +138,6 @@ const ForgotPasswordModal = ({ onClose }) => {
             className="modal-password-input"
           />
 
-          {error && <p className="modal-error">{error}</p>}
-          {success && <p className="modal-success">{success}</p>}
           <div className="modal-buttons">
             <button type="submit" className="modal-submit-btn">Update Password</button>
             <button type="button" className="modal-cancel-btn" onClick={onClose}>Cancel</button>
@@ -115,7 +151,7 @@ const ForgotPasswordModal = ({ onClose }) => {
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState('');
+  const [alert, setAlert] = useState({ show: false, type: '', message: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -123,6 +159,36 @@ const Login = () => {
     password: '',
   });
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const showAlert = (type, message) => {
+    setAlert({ show: true, type, message });
+    setTimeout(() => setAlert({ show: false, type: '', message: '' }), 5000);
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!validateEmail(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    
+    if (!formData.password) {
+      errors.password = 'Password is required';
+    } else if (formData.password.length < 3) {
+      errors.password = 'Password is too short';
+    }
+    
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -130,36 +196,72 @@ const Login = () => {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
-    if (error) setError('');
+    
+    // Clear alerts and field errors when user starts typing
+    if (alert.show) setAlert({ show: false, type: '', message: '' });
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  const getErrorMessage = (error) => {
+    // Network errors
+    if (!error.response) {
+      return 'Network error. Please check your internet connection and try again.';
+    }
+
+    const status = error.response.status;
+    const data = error.response.data;
+
+    switch (status) {
+      case 401:
+        return 'Invalid email or password. Please check your credentials and try again.';
+      case 422:
+        if (data.errors) {
+          // Handle validation errors
+          const firstError = Object.values(data.errors)[0];
+          return Array.isArray(firstError) ? firstError[0] : firstError;
+        }
+        return data.message || 'Please check your input and try again.';
+      case 429:
+        return 'Too many login attempts. Please wait a moment and try again.';
+      case 500:
+        return 'Server error. Please try again later.';
+      case 503:
+        return 'Service temporarily unavailable. Please try again later.';
+      default:
+        return data.message || 'An unexpected error occurred. Please try again.';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    // Validate inputs
-    if (!formData.email || !formData.password) {
-      setError('Please fill in all fields.');
-      setLoading(false);
+    
+    if (!validateForm()) {
+      showAlert('error', 'Please correct the errors below.');
       return;
     }
+
+    setLoading(true);
+    setAlert({ show: false, type: '', message: '' });
 
     try {
       const result = await login(formData);
       
       if (result.success) {
-        navigate('/rental-section');
+        showAlert('success', 'Login successful! Redirecting...');
+        setTimeout(() => navigate('/rental-section'), 1000);
       } else {
-        setError(result.message || 'Login failed. Please try again.');
+        const errorMessage = result.message || 'Login failed. Please try again.';
+        showAlert('error', errorMessage);
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      const errorMessage = getErrorMessage(err);
+      showAlert('error', errorMessage);
       console.error('Login error:', err);
     } finally {
       setLoading(false);
@@ -168,11 +270,11 @@ const Login = () => {
 
   useEffect(() => {
     const handleScreenClick = () => {
-      if (error) setError('');
+      if (alert.show) setAlert({ show: false, type: '', message: '' });
     };
     document.addEventListener('click', handleScreenClick);
     return () => document.removeEventListener('click', handleScreenClick);
-  }, [error]);
+  }, [alert.show]);
 
   const handleForgotPassword = () => {
     setShowForgotPasswordModal(true);
@@ -191,51 +293,63 @@ const Login = () => {
       <section className="login-logo-container">
         <p className="login-login-title">Login</p>
 
+        {alert.show && (
+          <AlertMessage 
+            type={alert.type} 
+            message={alert.message} 
+            onClose={() => setAlert({ show: false, type: '', message: '' })}
+          />
+        )}
+
         <form onSubmit={handleSubmit}>
           <div className="formFields">
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Email"
-              className='login-username'
-              aria-label="Email"
-              disabled={loading}
-            />
-
-            <div className='login-password'>
+            <div className="login-input-container">
               <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
+                type="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                placeholder="Password"
-                className='login-passwordInput'
-                aria-label="Password"
+                placeholder="Email"
+                className={`login-username ${fieldErrors.email ? 'error' : ''}`}
+                aria-label="Email"
                 disabled={loading}
               />
-
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className='login-eyeButton'
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                disabled={loading}
-              >
-                {showPassword ? (
-                  <EyeSlashIcon className='login-eyeIcon' />
-                ) : (
-                  <EyeIcon className='login-eyeIcon' />
-                )}
-              </button>
+              {fieldErrors.email && (
+                <p className="login-field-error">{fieldErrors.email}</p>
+              )}
             </div>
 
-            {error && (
-              <p className='login-errorMessage'>
-                {error}
-              </p>
-            )}
+            <div className="login-input-container">
+              <div className='login-password'>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Password"
+                  className={`login-passwordInput ${fieldErrors.password ? 'error' : ''}`}
+                  aria-label="Password"
+                  disabled={loading}
+                />
+
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className='login-eyeButton'
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={loading}
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className='login-eyeIcon' />
+                  ) : (
+                    <EyeIcon className='login-eyeIcon' />
+                  )}
+                </button>
+              </div>
+              {fieldErrors.password && (
+                <p className="login-field-error">{fieldErrors.password}</p>
+              )}
+            </div>
 
             <div className="forgotPasswordContainer">
               <button
@@ -249,10 +363,10 @@ const Login = () => {
 
             <button 
               type="submit" 
-              className="login-login-btn"
+              className='login-login-btn'
               disabled={loading}
             >
-              {loading ? 'Signing in...' : 'Login'}
+              {loading ? 'Signing In...' : 'Login'}
             </button>
           </div>
         </form>

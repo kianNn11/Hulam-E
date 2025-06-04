@@ -20,7 +20,8 @@ body.modal-open {
 
 /* Modal content container */
 .terms-modal-content {
-    background: linear-gradient(to bottom, #ffffff 68%, #5998F6 100%);
+    background: linear-gradient(to bottom, var(--modal-bg) 68%, #5998F6 100%);
+    color: var(--text-primary);
     width: 600px;  /* Adjust width for better readability */
     max-height: 600px; /* Set a max height to prevent the modal from being too large */
     overflow-y: auto;  /* Allow scrolling within the modal if content is long */
@@ -37,6 +38,7 @@ body.modal-open {
     font-weight: bold;
     margin-top: -100px;
     text-align: center;
+    color: var(--text-primary);
 }
 
 /* Scrollable text section for Terms */
@@ -47,6 +49,27 @@ body.modal-open {
     text-align: justify;
     padding-right: 10px;
     max-height: 100vh;  /* Control the height of the text section */
+    color: var(--text-primary);
+}
+
+.terms-text h4 {
+    color: var(--text-primary);
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.terms-text p {
+    color: var(--text-primary);
+    margin-bottom: 15px;
+}
+
+.terms-text ul {
+    color: var(--text-primary);
+}
+
+.terms-text li {
+    color: var(--text-primary);
+    margin-bottom: 5px;
 }
 
 /* Logo styling */
@@ -81,7 +104,6 @@ body.modal-open {
     transition: background-color 0.3s ease;
 }
 
-
 .terms-modal-buttons button:hover {
     background-color: #4765b7; /* Slightly darker shade on hover */
 }
@@ -93,15 +115,18 @@ body.modal-open {
     display: flex;
     align-items: center;
     gap: 10px;
+    color: var(--text-primary);
   }
   
   .terms-checkbox input[type="checkbox"] {
     transform: scale(1.2);
     cursor: pointer;
+    accent-color: var(--accent-color);
   }
   
   .terms-checkbox label {
     user-select: none;
+    color: var(--text-primary);
   }
   
 

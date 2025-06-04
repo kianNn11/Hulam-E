@@ -1,9 +1,10 @@
 .hero { 
     height: 100vh;
     width: 100%;
-    background: linear-gradient(to right, #ffffff 45%, #5998F6 80%);
+    background: linear-gradient(to right, var(--bg-primary) 45%, var(--accent-color) 80%);
     display: flex;
     overflow: hidden;
+    transition: background 0.3s ease;
 }
 
 .hero-left {
@@ -17,15 +18,16 @@
 
 .hero-left h1 {
     display: absolute;
-    color: #111827;
+    color: var(--text-primary);
     font-size: 64px;
     font-weight: bold;
     max-width: 650px; /* adjust this value to make the text narrower or wider */
     line-height: 100px; /* optional: to improve spacing between lines */
+    transition: color 0.3s ease;
 }
 
 .highlight {
-    color: #5998F6;
+    color: var(--accent-color);
 }
 
 .hero-description {
@@ -35,18 +37,19 @@
 
 .hero-left p {
     display: flex;
-    color: #111827;
+    color: var(--text-primary);
     font-size: 24px;
     font-weight: 400;
     max-width: 450px;
     margin-top: -50px;
+    transition: color 0.3s ease;
 }
 
 .rent-btn {
     color: #fff;
     cursor: pointer;
     font-size: 24px;
-    background-color: #5998f6;
+    background-color: var(--accent-color);
     border: none;
     border-radius: 10px;
     align-self: start;
@@ -56,7 +59,12 @@
     padding: 10px 30px;
     line-height: 1;
     font-family: 'Poppins', sans-serif;
+    transition: background-color 0.3s ease;
 } 
+
+.rent-btn:hover {
+    background-color: var(--accent-hover);
+}
 
 .bg-container {
     position: relative;
@@ -76,7 +84,8 @@
     .hero {
         flex-direction: column;
         height: 100vh;
-        background: linear-gradient(to right, #ffffff 50%, #5998F6 100%);
+        background: linear-gradient(to right, var(--bg-primary) 50%, var(--accent-color) 100%);
+        transition: background 0.3s ease;
     }
 
     .hero-left {
@@ -125,7 +134,8 @@
     .hero {
         flex-direction: column;
         height: 100vh;
-        background: linear-gradient(to right, #ffffff 50%, #5998F6 100%);
+        background: linear-gradient(to right, var(--bg-primary) 50%, var(--accent-color) 100%);
+        transition: background 0.3s ease;
     }
 
     .hero-left {
@@ -170,8 +180,9 @@
     .hero {
         flex-direction: column;
         height: auto;
-        background: linear-gradient(to right, #ffffff 50%, #5998F6 100%);
+        background: linear-gradient(to right, var(--bg-primary) 50%, var(--accent-color) 100%);
         margin-top: 78px;
+        transition: background 0.3s ease;
     }
 
     .hero-left {
