@@ -1,0 +1,247 @@
+.hero { 
+    height: 100vh;
+    width: 100%;
+    background: linear-gradient(to right, #ffffff 45%, #5998F6 80%);
+    display: flex;
+    overflow: hidden;
+}
+
+.hero-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.1;
+    margin-left: 80px;
+}
+
+.hero-left h1 {
+    display: absolute;
+    color: #111827;
+    font-size: 64px;
+    font-weight: bold;
+    max-width: 650px; /* adjust this value to make the text narrower or wider */
+    line-height: 100px; /* optional: to improve spacing between lines */
+}
+
+.highlight {
+    color: #5998F6;
+}
+
+.hero-description {
+    position: relative;
+
+  }
+
+.hero-left p {
+    display: flex;
+    color: #111827;
+    font-size: 24px;
+    font-weight: 400;
+    max-width: 450px;
+    margin-top: -50px;
+}
+
+.rent-btn {
+    color: #fff;
+    cursor: pointer;
+    font-size: 24px;
+    background-color: #5998f6;
+    border: none;
+    border-radius: 10px;
+    align-self: start;
+    gap: 10px;
+    min-height: 42px;
+    margin-top: 30px;
+    padding: 10px 30px;
+    line-height: 1;
+    font-family: 'Poppins', sans-serif;
+} 
+
+.bg-container {
+    position: relative;
+    margin: 0 auto;
+
+}
+
+.bg {
+    display: flex;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    padding-right: 10px;
+}
+
+@media (max-width: 1280px) {
+    .hero {
+        flex-direction: column;
+        height: 100vh;
+        background: linear-gradient(to right, #ffffff 50%, #5998F6 100%);
+    }
+
+    .hero-left {
+        top: 0;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .hero-left h1 {
+        font-size: 64px;
+        line-height: 100px;
+        max-width: 50%;
+
+    }
+
+    .hero-left p {
+        font-size: 24px;
+        max-width: 35%;
+
+    }
+
+    .rent-btn {
+        font-size: 20px;
+        padding: 10px 24px;
+    }
+
+    .bg-container {
+        position: relative;
+        margin: 0 auto;
+        width: 50%;
+    }
+
+    .bg {
+        display: flex;
+    position: absolute;
+    bottom: 0px;
+    right: -320px;
+    padding-right: 10px;
+        
+    }
+}
+
+
+
+@media (max-width: 1024px) {
+    .hero {
+        flex-direction: column;
+        height: 100vh;
+        background: linear-gradient(to right, #ffffff 50%, #5998F6 100%);
+    }
+
+    .hero-left {
+        top: 0;
+        align-items: flex-start;
+        gap: 30px;
+        margin-top: -40px;
+    }
+
+    .hero-left h1 {
+        font-size: 60px;
+        line-height: 1.2;
+        max-width: 60%;
+    }
+
+    .hero-left p {
+        font-size: 20px;
+        max-width: 30%;
+    }
+
+    .rent-btn {
+        font-size: 20px;
+        padding: 10px 24px;
+    }
+
+    .bg-container {
+        position: relative;
+        width: 38%; 
+    }
+
+    .bg {
+        display: flex;
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        width: 700px;
+    }
+}
+
+
+@media (max-width: 720px) {
+    .hero {
+        flex-direction: column;
+        height: auto;
+        background: linear-gradient(to right, #ffffff 50%, #5998F6 100%);
+        margin-top: 78px;
+    }
+
+    .hero-left {
+        margin-top: 0;
+        align-items: flex-start;
+    }
+
+    .hero-left h1 {
+        font-size: 60px;
+        line-height: 1.2;
+        max-width: 80%;
+    }
+
+    .hero-left p {
+        font-size: 20px;
+        margin-top: 0;
+        max-width: 60%;
+        margin-top: -50px;
+    }
+
+    .rent-btn {
+        font-size: 16px;
+        padding: 10px 24px;
+    }
+
+    
+
+    .bg {
+        position: relative;
+        right: 50%;
+        left: 50%;
+        transform: translate(-50%, 0%);
+    }
+
+}
+
+@media (max-width: 480px) {
+
+
+    .hero-left h1 {
+        font-size: 48px;
+        font-weight: 800;
+        line-height: 60px;
+        max-width: 80%;
+    }
+
+    .hero-left p {
+        font-size: 20px;
+        margin-top: 0;
+        max-width: 60%;
+        margin-top: -50px;
+    }
+
+    .rent-btn {
+        font-size: 16px;
+        padding: 10px 24px;
+    }
+
+    
+
+    .bg {
+        position: relative;
+        right: 50%;
+        left: 50%;
+        transform: translate(-50%, 0%);
+        width: 450px;
+    }
+
+}
+
+
+
+

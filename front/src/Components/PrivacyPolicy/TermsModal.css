@@ -1,0 +1,110 @@
+/* Overlay that covers the entire screen */
+.terms-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* dark semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* ensure it overlays everything */
+    overflow: auto; /* Ensures the modal can scroll if the content is long */
+}
+
+/* Prevent body scrolling when modal is active */
+body.modal-open {
+    overflow: hidden; /* Disable scrolling on body */
+}
+
+/* Modal content container */
+.terms-modal-content {
+    background: linear-gradient(to bottom, #ffffff 68%, #5998F6 100%);
+    width: 600px;  /* Adjust width for better readability */
+    max-height: 600px; /* Set a max height to prevent the modal from being too large */
+    overflow-y: auto;  /* Allow scrolling within the modal if content is long */
+    border-radius: 10px;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.terms-modal-content h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-top: -100px;
+    text-align: center;
+}
+
+/* Scrollable text section for Terms */
+.terms-text {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 10px;
+    text-align: justify;
+    padding-right: 10px;
+    max-height: 100vh;  /* Control the height of the text section */
+}
+
+/* Logo styling */
+.terms-logo {
+    display: block;
+    margin: 0 auto 1rem auto;
+    width: 245.14px;
+    height: auto;
+    margin-top: -60px;
+}
+
+/* Button container */
+.terms-modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center; /* Centers the buttons horizontally */
+    align-items: center; /* Ensures vertical alignment */
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Style for buttons */
+.terms-modal-buttons button {
+    padding: 10px 50px;
+    border-width: 4px;  /* Specify border width */
+    border-style: solid;  /* Define the border style */
+    border-color: #ffffff;  /* Set border color */
+    border-radius: 10px;
+    background-color: #5998F6;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.terms-modal-buttons button:hover {
+    background-color: #4765b7; /* Slightly darker shade on hover */
+}
+
+.terms-checkbox {
+    margin-top: 15px;
+    text-align: left;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .terms-checkbox input[type="checkbox"] {
+    transform: scale(1.2);
+    cursor: pointer;
+  }
+  
+  .terms-checkbox label {
+    user-select: none;
+  }
+  
+
+
+  
+  

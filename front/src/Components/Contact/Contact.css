@@ -1,0 +1,260 @@
+.contactPage {
+    width: 100%;
+    height: 100vh;
+    background-color: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  
+  .contactSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .contactContent {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap; /* allows better responsiveness */
+    gap: 40px;
+  }
+  
+  .contactText {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .contactTitle {
+    font-size: 56px;
+    font-weight: bold;
+    color: #5998F6;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    text-align: center;
+  }
+  
+  .contactDescription {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: #111827;
+    margin-bottom: 30px;
+    max-width: 650px;
+  }
+  
+  .contactDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    margin-left: 50px;
+  }
+  
+  .contactItem {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .icon {
+    width: 28px;
+    height: 28px;
+    color: #5998F6;
+  }
+  
+  .contactImage {
+    width: 50%;
+    height: 100vh;
+    display: flex;
+    justify-content: flex-start;
+    position: relative;
+  }
+  
+  .contactBgImg {
+    width: 719px;
+    height: 100%;
+    object-fit: cover;
+    object-position: 42% 80%; 
+  }
+  
+
+  @media (max-width: 1280px) {
+
+    .contactText {
+        margin: 30px;
+    }
+
+    .contactTitle {
+      font-size: 54px;
+    }
+  
+    .contactDescription {
+      font-size: 15px;
+      max-width: 525px;
+    }
+  
+    .contactImage {
+        width: 50%; /* Reduced from 50% */
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        position: relative;
+      }
+      
+      .contactBgImg {
+        width: 100%;
+        height: 642px;
+        object-fit: cover;
+        object-position: 42% 80%;
+        margin-top: 78px;
+      }
+  }
+
+  @media (max-width: 1024px) {
+    .contactContent {
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      align-items: center;
+      gap: 30px;
+    }
+  
+    .contactText {
+      flex: 1;
+      padding: 0 30px;
+    }
+  
+    .contactTitle {
+      font-size: 48px;
+    }
+  
+    .contactDescription {
+      font-size: 14px;
+      max-width: 500px;
+    }
+  
+    .contactDetails {
+      margin-left: 30px;
+    }
+  
+    .contactImage {
+      width: 45%;
+      height: 642px;
+      justify-content: flex-start;
+    }
+  
+    .contactBgImg {
+      width: 100%;
+      object-fit: cover;
+      object-position: 42% 80%;
+    }
+
+    .contactItem {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+    .icon {
+        width: 28px;
+        height: 28px;
+        color: #5998F6;
+      }
+  }
+  
+
+  @media (max-width: 720px) {
+    .contactPage {
+      padding: 30px 0px; /* Adjusted padding for small screens */
+    }
+  
+    .contactTitle {
+      font-size: 46px; /* Smaller title */
+    }
+  
+    .contactDescription {
+      font-size: 16px; /* Smaller description text */
+      max-width: 500px; /* Adjust max-width */
+    }
+  
+    .contactDetails {
+      gap: 0px; /* Reduced gap between items */
+    }
+  
+    .contactItem {
+      font-size: 12px; /* Smaller font size for items */
+    }
+    
+    .contactContent {
+        display: flex;
+        flex-direction: column;  /* Stacks content vertically */
+        align-items: center;
+        width: 100%;
+        
+      }
+  
+    .contactImage {
+        width: 100%;
+        justify-content: flex-start;
+        align-items: normal; 
+    }
+  
+    .contactBgImg {
+      height: 32.4%;
+      width: 720px;
+      margin-top: -38px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .contactPage {
+      padding: 50px 0px; /* Further reduced padding for very small screens */
+    }
+  
+    .contactTitle {
+      font-size: 36px; /* Smaller title for better readability */
+    }
+  
+    .contactDescription {
+      font-size: 14px; /* Smaller description text */
+      max-width: 350px; /* Adjust max-width for smaller screens */
+      text-align: center; /* Center text for better alignment */
+    }
+  
+    .contactDetails {
+      gap: 0px; /* Adjusted gap between items */
+    }
+  
+    .contactItem {
+      font-size: 12px; /* Keep smaller font size for items */
+    }
+  
+    .contactContent {
+      display: flex;
+      flex-direction: column; /* Stacks content vertically */
+      align-items: center;
+      width: 100%;
+      gap: 0px; /* Space between text and image */
+    }
+  
+    .contactImage {
+      width: 100%; /* Make image full width */
+      height: 207px; /* Adjust height for smaller screens */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      margin-top: 20px; /* Add space above the image */
+    }
+  
+    .contactBgImg {
+      width: 100%; /* Full width of the image */
+      height: 100%;
+      object-fit: cover; /* Maintain aspect ratio */
+      object-position: 50% 80%; /* Center image */
+    }
+  }
+  

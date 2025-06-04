@@ -1,0 +1,456 @@
+/* Main Container */
+.postContent {
+  font-family: 'Poppins', sans-serif;
+  padding: 32px 20px;
+  background-color: #f8fafc;
+  min-height: 400px;
+}
+
+/* Content Section */
+.contentSection {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.contentColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* About Container */
+.aboutContainer {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.aboutContent {
+  padding: 32px;
+}
+
+/* Posts Container */
+.postsContainer {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  padding: 32px;
+}
+
+/* Section Titles */
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 24px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #3b82f6;
+  position: relative;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background-color: #3b82f6;
+}
+
+/* Bio Section */
+.bioSection {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+}
+
+.bioText {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #374151;
+  margin: 0;
+  text-align: left;
+  font-style: italic;
+}
+
+/* Personal Info */
+.personalInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.infoItem {
+  padding: 20px 0;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.infoItem:last-child {
+  border-bottom: none;
+}
+
+.infoItem:hover {
+  background-color: #f8fafc;
+  margin: 0 -16px;
+  padding: 20px 16px;
+  border-radius: 8px;
+}
+
+.infoRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  color: #3b82f6;
+  margin-top: 2px;
+  flex-shrink: 0;
+  padding: 4px;
+  background-color: #eff6ff;
+  border-radius: 6px;
+}
+
+.infoLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.infoValue {
+  font-size: 16px;
+  color: #1f2937;
+  margin: 0;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.socialLink {
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  word-break: break-all;
+  transition: all 0.2s;
+  padding: 4px 8px;
+  background-color: #eff6ff;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.socialLink:hover {
+  color: #1d4ed8;
+  background-color: #dbeafe;
+  transform: translateY(-1px);
+}
+
+/* Posts Section */
+.postItem {
+  margin-bottom: 16px;
+}
+
+.notificationOutline {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.notificationOutline:hover {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+}
+
+.postIcon {
+  width: 32px;
+  height: 32px;
+  color: #3b82f6;
+  flex-shrink: 0;
+  padding: 4px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.postNotification {
+  font-size: 15px;
+  color: #374151;
+  margin: 0;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.viewPostLink {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.viewPostLink:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.emptyState p {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #9ca3af;
+}
+
+.createPostLink {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: #3b82f6;
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.createPostLink:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Profile Summary Card */
+.profileSummary {
+  margin-top: 40px;
+  padding: 0 20px;
+}
+
+.profileSummaryCard {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: linear-gradient(135deg, white 0%, #f8fafc 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  max-width: 450px;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+}
+
+.profileSummaryCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.profileSummaryImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.profileSummaryInfo h3 {
+  margin: 0 0 6px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.profileSummaryInfo p {
+  margin: 0 0 10px 0;
+  color: #6b7280;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.verifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #059669;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #a7f3d0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .postContent {
+    padding: 20px 16px;
+  }
+  
+  .contentColumns {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .aboutContent,
+  .postsContainer {
+    padding: 24px;
+  }
+  
+  .sectionTitle {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .bioSection {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  
+  .bioText {
+    font-size: 14px;
+  }
+  
+  .personalInfo {
+    gap: 16px;
+  }
+  
+  .infoItem {
+    padding: 16px 0;
+  }
+  
+  .infoItem:hover {
+    margin: 0 -12px;
+    padding: 16px 12px;
+  }
+  
+  .icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .infoValue,
+  .socialLink {
+    font-size: 14px;
+  }
+  
+  .notificationOutline {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .postIcon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .postNotification {
+    font-size: 14px;
+  }
+  
+  .emptyState {
+    padding: 40px 16px;
+  }
+  
+  .profileSummaryCard {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .profileSummaryImage {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .profileSummaryInfo h3 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .postContent {
+    padding: 16px 12px;
+  }
+  
+  .aboutContent,
+  .postsContainer {
+    padding: 20px;
+  }
+  
+  .sectionTitle {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+  
+  .bioSection {
+    padding: 16px;
+  }
+  
+  .personalInfo {
+    gap: 12px;
+  }
+  
+  .infoItem {
+    padding: 12px 0;
+  }
+  
+  .infoRow {
+    gap: 12px;
+  }
+  
+  .icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .infoValue,
+  .socialLink {
+    font-size: 13px;
+  }
+  
+  .notificationOutline {
+    padding: 14px;
+  }
+  
+  .postIcon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .postNotification {
+    font-size: 13px;
+  }
+  
+  .emptyState {
+    padding: 30px 12px;
+  }
+  
+  .createPostLink {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}

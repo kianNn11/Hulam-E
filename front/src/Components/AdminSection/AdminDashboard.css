@@ -1,0 +1,275 @@
+/* Grid Layout for Dashboard Cards */
+.admin-cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px; /* Set gap to 24px for better spacing */
+  padding: 32px; /* Adjust padding to 32px */
+  overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+/* ===== Earnings Card ===== */
+.admin-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px; /* Increased padding for better spacing */
+}
+
+.admin-cardContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-column2 {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-statContainer {
+  margin-top: 16px; /* Adjusted margin */
+}
+
+.admin-statHeader {
+  margin-bottom: 16px; /* Adjusted margin */
+}
+
+.admin-iconAndTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Adjusted gap */
+}
+
+.admin-earningIcon {
+  width: 32px;
+  height: 32px;
+  color: #5998f6;
+}
+
+.admin-earnings {
+  font-size: 24px; /* Increased font size */
+  font-weight: 600;
+}
+
+/* ✅ 2-Column Grid for Earnings Stats */
+.admin-statBodyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px; /* Adjusted gap */
+}
+
+.admin-statGroup {
+  background-color: #f9fafb;
+  padding: 16px; /* Adjusted padding */
+  border-radius: 8px;
+  text-align: center;
+}
+
+.admin-subtitle {
+  font-size: 14px; /* Adjusted font size */
+  font-weight: 500;
+  color: #5998f6;
+}
+
+.admin-statValue {
+  font-size: 18px; /* Increased font size */
+  font-weight: 600;
+  color: #111827;
+  margin-top: 8px; /* Adjusted margin */
+}
+
+/* ===== Users Card ===== */
+
+/* ✅ 2-Column Grid for User Stats */
+.admin-statBodyUsers {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px; /* Adjusted gap */
+  margin-top: 16px; /* Adjusted margin */
+}
+
+.admin-statLeftUsers {
+  background-color: #f9fafb;
+  padding: 16px; /* Adjusted padding */
+  border-radius: 8px;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 14px; /* Adjusted font size */
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.statValue {
+  font-size: 18px; /* Increased font size */
+  font-weight: 600;
+  color: #1f2937;
+  margin-top: 8px; /* Adjusted margin */
+}
+
+/* ===== Transaction Card ===== */
+
+
+.transactionList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Adjusted gap */
+  margin-top: 16px; /* Adjusted margin */
+  max-height: 300px; /* Set a max height for scroll */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding-right: 8px; /* Optional: space for scrollbar */
+}
+.transactionList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.transactionList::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.transactionItem {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* Adjusted gap */
+  background-color: #f9fafb;
+  padding: 12px; /* Adjusted padding */
+  border-radius: 8px;
+}
+
+.transactionImage {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.transactionDetails {
+  flex: 1;
+}
+
+.transactionName {
+  font-weight: 500;
+  display: block;
+  color: #111827;
+}
+
+.transactionDate {
+  font-size: 14px; /* Adjusted font size */
+  color: #6b7280;
+}
+
+.transactionPrice {
+  font-weight: 600;
+  color: #5998f6;
+}
+
+/* ===== Recent Activity ===== */
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Adjusted gap */
+  margin-top: 16px; /* Adjusted margin */
+  max-height: 300px; /* Set a max height for scroll */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding-right: 8px; /* Optional: space for scrollbar */
+}
+
+
+.activityItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px; /* Adjusted gap */
+  background-color: #f3f4f6;
+  padding: 16px; /* Adjusted padding */
+  border-radius: 8px;
+}
+
+.activityProfileImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.activityDetails {
+  flex: 1;
+}
+
+.activityMessage {
+  margin: 0;
+  color: #111827;
+}
+
+.activityMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px; /* Adjusted font size */
+  color: #6b7280;
+  margin-top: 8px; /* Adjusted margin */
+}
+
+.seeMoreLink {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.seeMoreLink:hover {
+  text-decoration: underline;
+}
+/* ===== Rental Orders Card ===== */
+
+.rentalOrdersList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Adjusted gap */
+  margin-top: 16px; /* Adjusted margin */
+}
+
+.rentalOrderItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: #f9fafb;
+  padding: 12px; /* Adjusted padding */
+  border-radius: 8px;
+}
+
+.rentalItemImage {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.rentalItemDetails {
+  flex: 1;
+}
+
+.rentalItemName {
+  font-weight: 500;
+  color: #111827;
+  display: block;
+}
+
+.rentalItemRenter {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.rentalOrderDate {
+  font-size: 14px;
+  color: #6b7280;
+  margin-left: auto;
+}
+/* Scrollbar Styling */
+.transactionList::-webkit-scrollbar,
+.activityList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.transactionList::-webkit-scrollbar-thumb,
+.activityList::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}

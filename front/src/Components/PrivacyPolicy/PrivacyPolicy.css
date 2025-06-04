@@ -1,0 +1,60 @@
+.policy-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #ffffff;
+  color: black;
+  line-height: 1.6;
+  margin-top: 30px;
+}
+
+.policy-container h1 {
+  font-size: 2.2em;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  color: #5998F6;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.section h2 {
+  font-size: 1.3em;
+  color: #5998F6;
+  margin-bottom: 0px;
+}
+
+.section ul {
+  padding-left: 20px;
+}
+
+.section li {
+  margin-bottom: 8px;
+}
+
+.final-text {
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+.accept-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.accept-button:hover {
+  background-color: #1b5e20;
+}
+
+.accepted-message {
+  margin-top: 20px;
+  color: green;
+  font-weight: bold;
+}

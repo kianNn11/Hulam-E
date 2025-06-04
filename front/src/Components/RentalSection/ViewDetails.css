@@ -1,0 +1,141 @@
+/* ViewDetails.css */
+
+.view-details-page {
+  height: 100%;
+  
+}
+
+.view-item-details {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.view-back-container {
+  margin-bottom: 12px;
+}
+
+.view-back-btn {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.view-back-btn:hover {
+  color: #5998F6;
+}
+
+.item-info-container {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 30px;
+}
+
+.view-img-container {
+  flex: 1;
+  width: 500px;
+  height: 500px;
+}
+
+.view-item-image img {
+  border-radius: 12px;
+  object-fit: cover;
+  width: 300px;
+  height: auto;
+}
+
+.item-details-text {
+  flex: 1 1 55%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-left: 30px;
+  align-items: flex-start;
+}
+
+.view-post-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.view-profile-icon {
+  width: 28px;
+  height: 28px;
+  color: #5998F6;
+}
+
+.owner-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #5998F6;
+}
+
+.view-item-name h2 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.view-item-price .price {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 6px 12px;
+  font-size: 0.9rem;
+  text-align: left;
+
+}
+
+.label {
+  font-weight: 600;
+  color: #5998F6;
+}
+.info-input {
+   align-items: flex-start;
+}
+
+.rent-now-btn {
+  margin-top: auto;
+  align-self: flex-start;
+  background-color: #5998F6;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 40px;
+}
+
+.rent-now-btn:hover {
+  background-color: #2563eb;
+}
+
+.rent-now-btn.disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.rent-now-btn.disabled:hover {
+  background-color: #9ca3af;
+  transform: none;
+}
+
+.view-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  font-size: 16px;
+  color: #64748b;
+}

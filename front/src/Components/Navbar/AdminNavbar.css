@@ -1,0 +1,151 @@
+.admin-navbar {
+  width: 100%;
+    display: flex;
+    align-items: center; /* Vertically center children */
+    justify-content: space-between;
+    
+    background-color: #fff;
+    position: relative;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);   
+    height: 78px; /* 👈 Add fixed height for vertical centering to work */
+    margin: 0 auto; /* Center the navbar */
+    max-width: 100%; /* Set a max width for the navbar */
+}
+
+.admin-nav-logo {
+  display: flex;
+    align-items: center;
+    height: 100%; /* optional if needed */
+    margin-top: 0x; /* ✅ Remove vertical shift */
+}
+
+.admin-navbar-img {
+   width: 245.14px;
+}
+
+
+.admin-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  font-size: 16px;
+  font-weight: 500;
+  list-style: none;
+}
+
+.admin-nav-menu li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+}
+
+.admin-nav-link {
+  font-size: 16px;
+  background: none;
+  border: none;
+  color: #111827;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.admin-nav-link:hover {
+  color: #5998F6;
+}
+
+.admin-nav-link.active {
+  color: #5998F6;
+    border-bottom: 3px solid #5998F6;
+}
+
+.admin-iconGroup {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.admin-iconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-heroIcon:hover {
+  color: #5998F6;
+}
+
+
+.admin-heroIcon {
+  width: 30px;
+  height: 30px;
+  color: #111827;
+  transition: color 0.2s ease;
+}
+
+.iconButton:hover .heroIcon {
+  color: #5998F6; 
+}
+
+.iconButton:active .heroIcon {
+  color: #5998F6; 
+}
+
+.iconButton.active .heroIcon {
+  color: #5998F6;
+}
+
+/* Modal styles */
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.admin-modal {
+  background: white;
+  padding: 1.5rem 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  text-align: center;
+  width: 300px;
+}
+
+.admin-modal-buttons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-around;
+}
+
+.admin-confirm-btn {
+  background-color: #5998F6;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-cancel-btn {
+  background-color: #9ca3af;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
