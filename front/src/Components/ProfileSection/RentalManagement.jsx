@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../Context/AuthContext';
 import { 
@@ -6,8 +6,7 @@ import {
   XCircleIcon, 
   ClockIcon,
   CalendarIcon,
-  UserIcon,
-  CurrencyDollarIcon
+  UserIcon
 } from '@heroicons/react/24/outline';
 import './RentalManagement.css';
 
@@ -23,16 +22,14 @@ const RentalManagement = () => {
     setTimeout(() => setAlert({ show: false, type: '', message: '' }), 5000);
   };
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     if (!user) return;
-    
     setLoading(true);
     try {
       const token = localStorage.getItem('authToken');
       const response = await axios.get('http://localhost:8000/api/transactions', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      
       setTransactions(response.data.data || []);
     } catch (error) {
       console.error('Error fetching transactions:', error);
@@ -40,11 +37,11 @@ const RentalManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     fetchTransactions();
-  }, [user]);
+  }, [user, fetchTransactions]);
 
   const handleApprove = async (transactionId) => {
     try {
@@ -227,7 +224,6 @@ const RentalManagement = () => {
                     </span>
                   </div>
                   <div className="transaction-amount">
-                    <CurrencyDollarIcon className="currency-icon" />
                     ₱{transaction.total_amount?.toLocaleString()}
                   </div>
                 </div>

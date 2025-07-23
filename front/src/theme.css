@@ -1,0 +1,15 @@
+/* Formal Blue/Gray High-Contrast Theme Variables */
+:root {
+  --bg-primary: #f4f6fa;
+  --card-bg: #ffffff;
+  --bg-secondary: #e9edf5;
+  --modal-bg: #f8fafc;
+  --input-bg: #f1f5f9;
+  --text-primary: #1a2233;
+  --text-secondary: #4b5876;
+  --accent-color: #2451a6;
+  --border-color: #c3cfe2;
+  --shadow: rgba(36, 81, 166, 0.08);
+}
+
+/* For dark text on light backgrounds, and strong accent color for buttons/links */ 

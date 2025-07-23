@@ -165,7 +165,10 @@ export const authAPI = {
 export const userAPI = {
   updateProfile: (userData) => api.put('/users/profile', userData),
   getUserRentals: (userId) => api.get(`/users/${userId}/rentals`),
-  verifyStudent: (verificationData) => api.post('/users/verify-student', verificationData),
+  verifyStudent: (verificationData) => {
+    // If FormData, do not set Content-Type, let Axios handle it
+    return api.post('/users/verify-student', verificationData);
+  },
   getEarnings: () => api.get('/user/earnings'),
 };
 

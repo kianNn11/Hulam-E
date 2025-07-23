@@ -17,8 +17,8 @@ const Post = ({ onClose }) => {
     location: "",
     description: ""
   });
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: '', message: '' });
   const [showSuccessCard, setShowSuccessCard] = useState(false);
@@ -36,7 +36,7 @@ const Post = ({ onClose }) => {
       isAuthenticated: !!user,
       token: localStorage.getItem('authToken') ? 'present' : 'missing',
       formData: formData,
-      hasImage: !!selectedImage
+      hasImage: !!selectedImages.length
     });
     
     if (!user) {
@@ -64,9 +64,8 @@ const Post = ({ onClose }) => {
       submitData.append('price', parseFloat(formData.price));
       submitData.append('location', formData.location.trim());
       
-      if (selectedImage) {
-        submitData.append('image', selectedImage);
-      }
+      // Multi-image upload
+      selectedImages.forEach(img => submitData.append('images[]', img));
 
       await rentalAPI.createRental(submitData);
       
@@ -80,8 +79,8 @@ const Post = ({ onClose }) => {
         location: "",
         description: ""
       });
-      setSelectedImage(null);
-      setImagePreview(null);
+      setSelectedImages([]);
+      setImagePreviews([]);
 
     } catch (error) {
       console.error('Error creating rental:', error);
@@ -134,41 +133,27 @@ const Post = ({ onClose }) => {
   };
 
   const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        showAlert('error', 'Please select a valid image file.');
-        return;
-      }
-      
-      // Validate file size (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
-        showAlert('error', 'Image size must be less than 5MB.');
-        return;
-      }
-
-      setSelectedImage(file);
-      
-      // Create preview
+    const files = Array.from(e.target.files);
+    const validFiles = files.filter(file => file.type.startsWith('image/') && file.size <= 15 * 1024 * 1024);
+    if (validFiles.length !== files.length) {
+      showAlert('error', 'Some files were not valid images or exceeded 15MB.');
+    }
+    setSelectedImages(prev => [...prev, ...validFiles]);
+    // Generate previews
+    validFiles.forEach(file => {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
+      reader.onload = (ev) => {
+        setImagePreviews(prev => [...prev, ev.target.result]);
       };
       reader.readAsDataURL(file);
-      
-      setAlert({ show: false, type: '', message: '' }); // Clear any previous errors
-    }
+    });
   };
 
-  const removeImage = () => {
-    setSelectedImage(null);
-    setImagePreview(null);
-    // Reset the file input
+  const removeImage = (idx) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== idx));
+    setImagePreviews(prev => prev.filter((_, i) => i !== idx));
     const fileInput = document.getElementById('imageUpload');
-    if (fileInput) {
-      fileInput.value = '';
-    }
+    if (fileInput) fileInput.value = '';
   };
 
   const handleViewPosts = () => {
@@ -224,20 +209,24 @@ const Post = ({ onClose }) => {
             <div className="post-column">
               <div className="post-image">
                 <div className="post-div5">
-                  {imagePreview ? (
-                    <div className="image-preview-container">
-                      <img src={imagePreview} alt="Preview" className="image-preview" />
-                      <button type="button" onClick={removeImage} className="remove-image-btn">
-                        <XMarkIcon className="remove-icon" />
-                      </button>
-                      <p className="image-preview-text">Image selected successfully!</p>
+                  {imagePreviews.length > 0 ? (
+                    <div className="image-preview-container-multi">
+                      {imagePreviews.map((src, idx) => (
+                        <div key={idx} className="image-preview-wrapper">
+                          <img src={src} alt={`Preview ${idx+1}`} className="image-preview" />
+                          <button type="button" onClick={() => removeImage(idx)} className="remove-image-btn">
+                            <XMarkIcon className="remove-icon" />
+                          </button>
+                        </div>
+                      ))}
+                      <p className="image-preview-text">{imagePreviews.length} image(s) selected</p>
                     </div>
                   ) : (
                     <>
                       <label htmlFor="imageUpload" className="frame-post">
                         <CloudArrowUpIcon className="upload-icon" aria-label="Upload icon" />
                       </label>
-                      <p className="upload1Photoonly">Upload 1 photo only</p>
+                      <p className="upload1Photoonly">Upload Image</p>
                     </>
                   )}
                   <input
@@ -246,7 +235,8 @@ const Post = ({ onClose }) => {
                     accept="image/*"
                     onChange={handleImageUpload}
                     style={{ display: 'none' }}
-                    aria-label="Upload image"
+                    aria-label="Upload images"
+                    multiple
                     disabled={loading}
                   />
                 </div>

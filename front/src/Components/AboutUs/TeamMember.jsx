@@ -45,7 +45,7 @@ const TeamMember = () => {
 const Team = ({ name, role, image }) => {
   return (
     <div className="teamMember">
-      <img src={image} alt={`Photo of ${name}`} className="memberPhoto" />
+      <img src={image} alt={name} className="memberPhoto" />
       <h3 className="memberName">{name}</h3>
       <p className="memberRole">{role}</p>
     </div>

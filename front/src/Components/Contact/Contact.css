@@ -1,7 +1,7 @@
 .contactPage {
     width: 100%;
     height: 100vh;
-    background-color: var(--bg-primary);
+    background-color: #f0f0f0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -34,8 +34,8 @@
   .contactTitle {
     font-size: 56px;
     font-weight: bold;
-    color: var(--accent-color);
-    text-shadow: 0 4px 4px var(--shadow);
+    color: #007bff;
+    text-shadow: 0 4px 4px #ccc;
     text-align: center;
   }
   
@@ -43,7 +43,7 @@
     font-size: 16px;
     font-weight: 400;
     line-height: 1.6;
-    color: var(--text-primary);
+    color: #333;
     margin-bottom: 30px;
     max-width: 650px;
     transition: color 0.3s ease;
@@ -65,7 +65,7 @@
   .icon {
     width: 28px;
     height: 28px;
-    color: var(--accent-color);
+    color: #007bff;
   }
   
   .contactImage {
@@ -163,7 +163,7 @@
     .icon {
         width: 28px;
         height: 28px;
-        color: var(--accent-color);
+        color: #007bff;
       }
   }
   

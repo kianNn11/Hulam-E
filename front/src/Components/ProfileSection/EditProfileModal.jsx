@@ -83,9 +83,9 @@ const EditProfileModal = ({ onClose, profileData, user, onSave, loading }) => {
         type: file.type
       });
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+      // Validate file size (max 15MB)
+      if (file.size > 15 * 1024 * 1024) {
+        alert('File size must be less than 15MB');
         return;
       }
 

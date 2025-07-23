@@ -1,27 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './PrivacyPolicy.css';
 
 const PrivacyPolicy = () => {
-  const [accepted, setAccepted] = useState(false);
-  const [acceptedDate, setAcceptedDate] = useState('');
-
-  const handleAccept = () => {
-    const now = new Date();
-    const formattedDate = now.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-
-    setAccepted(true);
-    setAcceptedDate(formattedDate);
-
-    // Optional: store it in localStorage
-    localStorage.setItem('privacyAcceptedDate', now.toISOString());
-
-    alert('Thank you for accepting the Privacy and Security Policy.');
-  };
-
   return (
     <div className="policy-container">
       <h1>Privacy and Security</h1>
@@ -62,18 +42,7 @@ const PrivacyPolicy = () => {
       <p className="final-text">
         By using HULAM-E, you acknowledge and agree to these Terms and Privacy Policies.
       </p>
-
-      {!accepted && (
-        <button className="accept-button" onClick={handleAccept}>
-          I Accept
-        </button>
-      )}
-
-      {accepted && (
-        <p className="accepted-message">
-          You have accepted the policy on <strong>{acceptedDate}</strong>.
-        </p>
-      )}
+      {/* 'I Accept' button removed as per request */}
     </div>
   );
 };

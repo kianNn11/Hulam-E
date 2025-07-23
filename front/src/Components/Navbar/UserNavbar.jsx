@@ -6,15 +6,11 @@ import { Bars3Icon } from '@heroicons/react/24/solid';
 import {
   UserCircleIcon,
   ArrowLeftEndOnRectangleIcon,
-  SunIcon,
-  MoonIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../Context/AuthContext';
-import { useTheme } from '../../Context/ThemeContext';
 
 const UserNavbar = () => {
   const { logout } = useAuth(); 
-  const { isDarkMode, toggleTheme } = useTheme();
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -131,18 +127,6 @@ const UserNavbar = () => {
       <UserCircleIcon className="user-heroIcon" />
     </button>
   </Link>
-
-  <button
-    className="user-iconButton"
-    aria-label="Toggle Theme"
-    onClick={toggleTheme}
-  >
-    {isDarkMode ? (
-      <SunIcon className="user-heroIcon" />
-    ) : (
-      <MoonIcon className="user-heroIcon" />
-    )}
-  </button>
 
   <button
     className="user-iconButton"

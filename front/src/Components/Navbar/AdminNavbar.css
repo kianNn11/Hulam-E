@@ -4,10 +4,10 @@
     align-items: center; /* Vertically center children */
     justify-content: space-between;
     
-    background-color: var(--navbar-bg);
+    background-color: #f3f4f6;
     position: relative;
     z-index: 100;
-    box-shadow: 0 2px 4px var(--shadow);   
+    box-shadow: 0 2px 4px #d1d5db;   
     height: 78px; /* 👈 Add fixed height for vertical centering to work */
     margin: 0 auto; /* Center the navbar */
     max-width: 100%; /* Set a max width for the navbar */
@@ -48,7 +48,7 @@
   font-size: 16px;
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: #374151;
   cursor: pointer;
   padding: 0;
   text-decoration: none;
@@ -56,12 +56,12 @@
 }
 
 .admin-nav-link:hover {
-  color: var(--accent-color);
+  color: #4f46e5;
 }
 
 .admin-nav-link.active {
-  color: var(--accent-color);
-    border-bottom: 3px solid var(--accent-color);
+  color: #4f46e5;
+    border-bottom: 3px solid #4f46e5;
 }
 
 .admin-iconGroup {
@@ -81,14 +81,14 @@
 }
 
 .admin-heroIcon:hover {
-  color: var(--accent-color);
+  color: #4f46e5;
 }
 
 
 .admin-heroIcon {
   width: 30px;
   height: 30px;
-  color: var(--text-primary);
+  color: #374151;
   transition: color 0.2s ease;
   /* ✅ Fix icon flickering */
   flex-shrink: 0;
@@ -101,15 +101,15 @@
 }
 
 .iconButton:hover .heroIcon {
-  color: var(--accent-color); 
+  color: #4f46e5; 
 }
 
 .iconButton:active .heroIcon {
-  color: var(--accent-color); 
+  color: #4f46e5; 
 }
 
 .iconButton.active .heroIcon {
-  color: var(--accent-color);
+  color: #4f46e5;
 }
 
 /* Modal styles */
@@ -127,11 +127,11 @@
 }
 
 .admin-modal {
-  background: var(--modal-bg);
-  color: var(--text-primary);
+  background: #f9fafb;
+  color: #374151;
   padding: 1.5rem 2rem;
   border-radius: 10px;
-  box-shadow: 0 2px 12px var(--shadow);
+  box-shadow: 0 2px 12px #d1d5db;
   text-align: center;
   width: 300px;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -144,7 +144,7 @@
 }
 
 .admin-confirm-btn {
-  background-color: var(--accent-color);
+  background-color: #4f46e5;
   color: white;
   padding: 0.5rem 1rem;
   border: none;
@@ -154,7 +154,7 @@
 }
 
 .admin-confirm-btn:hover {
-  background-color: var(--accent-hover);
+  background-color: #6366f1;
 }
 
 .admin-cancel-btn {

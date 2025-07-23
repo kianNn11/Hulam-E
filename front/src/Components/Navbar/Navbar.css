@@ -4,12 +4,12 @@
     left: 0;
     width: 100%; /* fixed width */
     height: 78px;
-    background-color: var(--navbar-bg);
+    background-color: #f0f0f0;
     display: flex;
     align-items: center;
     font-size: 16px;
     font-weight: 400;
-    box-shadow: 0 4px 4px var(--shadow);
+    box-shadow: 0 4px 4px #ccc;
     z-index: 999;
     padding: 0 30px;
     box-sizing: border-box; /* very important */ 
@@ -27,7 +27,7 @@
     width: 30px;
     height: 30px;
     cursor: pointer;
-    color: var(--text-primary);
+    color: #333;
     transition: color 0.3s ease;
   }
   
@@ -63,18 +63,18 @@
   
   .login-nav-link {
   text-decoration: none;
-  color: var(--text-primary);
+  color: #333;
   transition: color 0.3s ease, border-bottom 0.3s ease;
   }
   
   .login-nav-link:hover {
-    color: var(--accent-color);
+    color: #007bff;
   }
   
   /* Active link: shows "hover" effect only on the current route */
   .login-nav-link.active, .login-nav-link.focus {
-    color: var(--accent-color);
-    border-bottom: 3px solid var(--accent-color);
+    color: #007bff;
+    border-bottom: 3px solid #007bff;
   }
   
   .login-nav-buttons {
@@ -94,14 +94,14 @@
     border: none;
     cursor: pointer;
     font-family: "Poppins", sans-serif;
-    background-color: var(--accent-color);
+    background-color: #007bff;
     color: white;
     right: 0;
     transition: background-color 0.3s ease;
   }
 
   .login-btn:hover {
-    background-color: var(--accent-hover);
+    background-color: #0056b3;
   }
 
   .login-menu-overlay {
@@ -132,11 +132,11 @@
   
     .login-menu-content {
       width: 250px;
-      background-color: var(--navbar-bg);
-      color: var(--text-primary);
+      background-color: #f0f0f0;
+      color: #333;
       height: 100%;
       padding: 20px;
-      box-shadow: -2px 0 10px var(--shadow);
+      box-shadow: -2px 0 10px #ccc;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -153,46 +153,18 @@
       display: block;
       padding: 15px;
       font-size: 16px;
-      color: var(--text-primary);
+      color: #333;
       text-decoration: none;
       transition: background-color 0.3s ease, color 0.3s ease;
     }
   
     .login-nav-link:hover,
     .login-nav-link.active {
-      background-color: var(--bg-secondary);
-      color: var(--accent-color);
+      background-color: #e0e0e0;
+      color: #007bff;
     }
   
     .login-menu-links li + li {
       margin-top: 10px;
     }
-  }
-
-  /* Theme toggle button styles */
-  .theme-toggle-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
-  }
-
-  .theme-toggle-btn:hover {
-    background-color: var(--bg-secondary);
-  }
-
-  .theme-icon {
-    width: 24px;
-    height: 24px;
-    color: var(--text-primary);
-    transition: color 0.3s ease;
-  }
-
-  .theme-toggle-btn:hover .theme-icon {
-    color: var(--accent-color);
   }

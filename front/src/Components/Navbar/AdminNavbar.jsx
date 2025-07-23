@@ -5,16 +5,12 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import {
   ArrowLeftEndOnRectangleIcon,
-  SunIcon,
-  MoonIcon,
 } from "@heroicons/react/24/outline";
-import { useTheme } from '../../Context/ThemeContext';
 
 const AdminNavbar = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { isDarkMode, toggleTheme } = useTheme();
   
   const getActiveMenu = () => {
     switch (location.pathname) {
@@ -77,17 +73,6 @@ const AdminNavbar = () => {
 
 
         <div className='admin-iconGroup'>
-          <button 
-            className='admin-iconButton' 
-            aria-label="Toggle Theme" 
-            onClick={toggleTheme}
-          >
-            {isDarkMode ? (
-              <SunIcon className='admin-heroIcon' />
-            ) : (
-              <MoonIcon className='admin-heroIcon' />
-            )}
-          </button>
           <button className='admin-iconButton' aria-label="Logout" onClick={() => setShowLogoutModal(true)}>
             <ArrowLeftEndOnRectangleIcon className='admin-heroIcon' />
           </button>

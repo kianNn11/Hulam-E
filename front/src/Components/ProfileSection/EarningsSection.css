@@ -1,12 +1,12 @@
 .earnings {
-  background-color: var(--bg-primary);
+  background-color: #f0f2f5;
   padding: 50px;
   transition: background-color 0.3s ease;
 }
 
 .earningsSection {
-  background: var(--card-bg);
-  box-shadow: 0 4px 12px var(--shadow);
+  background: #ffffff;
+  box-shadow: 0 4px 12px #e0e0e0;
   margin-bottom: 20px;
   position: relative;
   padding: 20px;
@@ -24,7 +24,7 @@
 .sectionTitle {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #333333;
   transition: color 0.3s ease;
 }
 
@@ -39,7 +39,7 @@
   margin-top: 40px;
   font-size: 24px;
   font-weight: 700;
-  color: var(--accent-color);
+  color: #2962ff;
 }
 
 .earningsStats {
@@ -47,7 +47,7 @@
   flex-direction: column;
   gap: 5px;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666666;
   text-align: right;
   transition: color 0.3s ease;
 }
@@ -67,22 +67,22 @@
 .no-transactions {
   padding: 40px 20px;
   text-align: center;
-  color: var(--text-secondary);
+  color: #666666;
   font-style: italic;
-  background: var(--bg-secondary);
+  background: #f0f2f5;
   border-radius: 8px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e0e0e0;
   margin-top: 20px;
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .transactionHistory {
   margin-top: 30px;
-  background: var(--card-bg);
+  background: #ffffff;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 4px 6px -1px var(--shadow);
-  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 6px -1px #e0e0e0;
+  border: 1px solid #e0e0e0;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -90,10 +90,10 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  background: var(--bg-secondary);
+  background: #f0f2f5;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e0e0e0;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -101,8 +101,8 @@
   display: flex;
   justify-content: space-between;
   padding: 15px 20px;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--card-bg);
+  border-bottom: 1px solid #e0e0e0;
+  background: #ffffff;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -111,7 +111,7 @@
 }
 
 .transactionItem:hover {
-  background-color: var(--bg-secondary);
+  background-color: #f0f2f5;
   cursor: pointer;
 }
 
@@ -130,7 +130,7 @@
 }
 
 .transactionDate p {
-  color: var(--text-primary);
+  color: #333333;
   margin: 0;
   font-size: 14px;
   font-weight: 500;
@@ -140,7 +140,7 @@
 .calendarIcon {
   width: 20px;
   height: 20px;
-  color: var(--accent-color);
+  color: #2962ff;
 }
 
 .transactionInfo {
@@ -152,14 +152,14 @@
 
 .transactionDescription {
   font-weight: 500;
-  color: var(--text-primary);
+  color: #333333;
   margin: 0;
   transition: color 0.3s ease;
 }
 
 .transactionRental {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666666;
   margin: 0;
   transition: color 0.3s ease;
 }
@@ -198,23 +198,23 @@
 }
 
 .status-cancelled {
-  background-color: var(--bg-secondary);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
+  background-color: #f0f2f5;
+  color: #666666;
+  border: 1px solid #e0e0e0;
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .transactionAmount {
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #333333;
   display: flex;
   align-items: center;
   transition: color 0.3s ease;
 }
 
 .transactionAmount p {
-  color: var(--text-primary);
+  color: #333333;
   margin: 0;
   font-size: 18px;
   font-weight: 600;
@@ -240,13 +240,13 @@
 
 .nav-items .navItem {
   text-decoration: none;
-  color: var(--text-primary);
+  color: #333333;
   transition: color 0.3s ease, background-color 0.3s ease;
 }
 
 .nav-items .navItem:hover {
   color: white;
-  background-color: var(--accent-color);
+  background-color: #2962ff;
   padding: 8px;
   border-radius: 10px;
 }
@@ -286,7 +286,7 @@
 /* Borrowed Items Section */
 .borrowedItemsSection {
   margin-top: 40px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid #e0e0e0;
   padding-top: 30px;
   transition: border-color 0.3s ease;
 }
@@ -303,7 +303,7 @@
   flex-direction: column;
   gap: 5px;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666666;
   text-align: right;
   transition: color 0.3s ease;
 }
@@ -315,9 +315,9 @@
 .no-borrowed-items {
   padding: 20px;
   text-align: center;
-  color: var(--text-secondary);
+  color: #666666;
   font-style: italic;
-  background: var(--bg-secondary);
+  background: #f0f2f5;
   border-radius: 8px;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -333,14 +333,14 @@
   align-items: center;
   gap: 15px;
   padding: 15px;
-  background: var(--card-bg);
+  background: #ffffff;
   border-radius: 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e0e0e0;
   transition: all 0.2s ease;
 }
 
 .borrowedItem:hover {
-  background: var(--bg-secondary);
+  background: #f0f2f5;
   transform: translateY(-1px);
 }
 
@@ -364,9 +364,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-secondary);
+  background: #f0f2f5;
   font-size: 24px;
-  color: var(--text-secondary);
+  color: #666666;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -380,14 +380,14 @@
 .borrowedItemTitle {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #333333;
   margin: 0;
   transition: color 0.3s ease;
 }
 
 .borrowedItemOwner {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666666;
   margin: 0;
   transition: color 0.3s ease;
 }
@@ -395,7 +395,7 @@
 .borrowedItemAmount {
   font-size: 16px;
   font-weight: 700;
-  color: var(--accent-color);
+  color: #2962ff;
   margin: 0;
 }
 
@@ -405,8 +405,8 @@
 
 .borrowedDate {
   font-size: 12px;
-  color: var(--text-secondary);
-  background: var(--bg-secondary);
+  color: #666666;
+  background: #f0f2f5;
   padding: 2px 6px;
   border-radius: 4px;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -463,7 +463,7 @@
 
 .borrowedItemMeta p {
   font-size: 12px;
-  color: var(--text-secondary);
+  color: #666666;
   margin: 0;
   transition: color 0.3s ease;
 }
@@ -471,20 +471,20 @@
 /* Debug and utility styles */
 .debug-info {
   font-size: 12px;
-  color: var(--text-secondary);
+  color: #666666;
   margin-top: 10px;
   transition: color 0.3s ease;
 }
 
 .debug-info-detailed {
   font-size: 12px;
-  color: var(--text-secondary);
+  color: #666666;
   margin-top: 10px;
   margin-bottom: 20px;
   padding: 10px;
-  background-color: var(--bg-secondary);
+  background-color: #f0f2f5;
   border-radius: 4px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e0e0e0;
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -494,7 +494,7 @@
 
 .refresh-button {
   padding: 8px 16px;
-  background-color: var(--accent-color);
+  background-color: #2962ff;
   color: white;
   border: none;
   border-radius: 4px;
@@ -504,13 +504,13 @@
 }
 
 .refresh-button:hover {
-  background-color: var(--accent-hover);
+  background-color: #2962ff;
 }
 
 .retry-button {
   margin-top: 10px;
   padding: 8px 16px;
-  background-color: var(--accent-color);
+  background-color: #2962ff;
   color: white;
   border: none;
   border-radius: 4px;
@@ -519,12 +519,93 @@
 }
 
 .retry-button:hover {
-  background-color: var(--accent-hover);
+  background-color: #2962ff;
 }
 
 .no-transactions p:last-child {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666666;
   margin-top: 10px;
   transition: color 0.3s ease;
+}
+
+.earningsSummaryCards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 32px;
+  justify-content: center;
+}
+.summaryCard {
+  background: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.06);
+  padding: 24px 32px;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  transition: box-shadow 0.2s, background 0.2s;
+  border: 1px solid #e0e0e0;
+}
+.summaryCard:hover {
+  box-shadow: 0 4px 16px rgba(44,62,80,0.10);
+  background: #f1f5f9;
+}
+.summaryLabel {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.summaryValue {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+}
+.summaryValue.total {
+  color: #2563eb;
+  font-size: 28px;
+}
+.sectionSubtitle {
+  font-size: 15px;
+  color: #64748b;
+  margin-top: 2px;
+  margin-bottom: 0;
+  font-weight: 400;
+}
+.formal-header {
+  align-items: flex-start;
+  flex-direction: row;
+  gap: 24px;
+}
+.formal-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.06);
+  padding: 24px;
+  margin-bottom: 32px;
+  border: 1px solid #e0e0e0;
+}
+.count {
+  color: #2563eb;
+  font-size: 15px;
+  font-weight: 600;
+}
+.bold {
+  font-weight: 700;
+  color: #1e293b;
+}
+@media (max-width: 900px) {
+  .earningsSummaryCards {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .summaryCard {
+    min-width: unset;
+    width: 100%;
+    align-items: flex-start;
+  }
 }

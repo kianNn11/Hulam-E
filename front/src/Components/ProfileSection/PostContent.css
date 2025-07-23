@@ -2,7 +2,7 @@
 .postContent {
   font-family: 'Poppins', sans-serif;
   padding: 32px 20px;
-  background-color: var(--bg-primary);
+  background-color: #f9fafb;
   min-height: 400px;
   transition: background-color 0.3s ease;
 }
@@ -22,11 +22,11 @@
 
 /* About Container */
 .aboutContainer {
-  background: var(--card-bg);
+  background: #f3f4f6;
   border-radius: 16px;
-  box-shadow: 0 4px 6px -1px var(--shadow);
+  box-shadow: 0 4px 6px -1px #e5e7eb;
   overflow: hidden;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e5e7eb;
   transition: background-color 0.3s ease;
 }
 
@@ -36,11 +36,11 @@
 
 /* Posts Container */
 .postsContainer {
-  background: var(--card-bg);
+  background: #f3f4f6;
   border-radius: 16px;
-  box-shadow: 0 4px 6px -1px var(--shadow);
+  box-shadow: 0 4px 6px -1px #e5e7eb;
   overflow: hidden;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e5e7eb;
   padding: 32px;
   transition: background-color 0.3s ease;
 }
@@ -49,10 +49,10 @@
 .sectionTitle {
   font-size: 24px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1f2937;
   margin: 0 0 24px 0;
   padding-bottom: 12px;
-  border-bottom: 2px solid var(--accent-color);
+  border-bottom: 2px solid #3b82f6;
   position: relative;
   transition: color 0.3s ease;
 }
@@ -64,23 +64,23 @@
   left: 0;
   width: 60px;
   height: 2px;
-  background-color: var(--accent-color);
+  background-color: #3b82f6;
 }
 
 /* Bio Section */
 .bioSection {
   margin-bottom: 32px;
   padding: 24px;
-  background: var(--bg-secondary);
+  background: #e5e7eb;
   border-radius: 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e5e7eb;
   transition: background-color 0.3s ease;
 }
 
 .bioText {
   font-size: 16px;
   line-height: 1.6;
-  color: var(--text-primary);
+  color: #1f2937;
   margin: 0;
   text-align: left;
   font-style: italic;
@@ -105,7 +105,7 @@
 }
 
 .infoItem:hover {
-  background-color: var(--bg-secondary);
+  background-color: #e5e7eb;
   margin: 0 -16px;
   padding: 20px 16px;
   border-radius: 8px;
@@ -120,11 +120,11 @@
 .icon {
   width: 24px;
   height: 24px;
-  color: var(--accent-color);
+  color: #3b82f6;
   margin-top: 2px;
   flex-shrink: 0;
   padding: 4px;
-  background-color: var(--bg-secondary);
+  background-color: #e5e7eb;
   border-radius: 6px;
   transition: background-color 0.3s ease;
 }
@@ -132,7 +132,7 @@
 .infoLabel {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #4b5563;
   margin: 0 0 4px 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -141,7 +141,7 @@
 
 .infoValue {
   font-size: 16px;
-  color: var(--text-primary);
+  color: #1f2937;
   margin: 0;
   font-weight: 500;
   word-break: break-word;
@@ -149,21 +149,21 @@
 }
 
 .socialLink {
-  color: var(--accent-color);
+  color: #3b82f6;
   text-decoration: none;
   font-size: 16px;
   font-weight: 500;
   word-break: break-all;
   transition: all 0.2s;
   padding: 4px 8px;
-  background-color: var(--bg-secondary);
+  background-color: #e5e7eb;
   border-radius: 6px;
   display: inline-block;
 }
 
 .socialLink:hover {
-  color: var(--accent-hover);
-  background-color: var(--accent-color);
+  color: #1d4ed8;
+  background-color: #3b82f6;
   color: white;
   transform: translateY(-1px);
 }
@@ -178,34 +178,34 @@
   align-items: center;
   gap: 16px;
   padding: 20px;
-  background: var(--card-bg);
+  background: #f3f4f6;
   border-radius: 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e5e7eb;
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .notificationOutline:hover {
-  background: var(--bg-secondary);
+  background: #e5e7eb;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--shadow);
-  border-color: var(--accent-color);
+  box-shadow: 0 8px 25px #e5e7eb;
+  border-color: #3b82f6;
 }
 
 .postIcon {
   width: 32px;
   height: 32px;
-  color: var(--accent-color);
+  color: #3b82f6;
   flex-shrink: 0;
   padding: 4px;
-  background-color: var(--bg-secondary);
+  background-color: #e5e7eb;
   border-radius: 8px;
   transition: background-color 0.3s ease;
 }
 
 .postNotification {
   font-size: 14px;
-  color: var(--text-primary);
+  color: #1f2937;
   margin: 0;
   line-height: 1.5;
   font-weight: 500;
@@ -213,14 +213,14 @@
 }
 
 .viewPostLink {
-  color: var(--accent-color);
+  color: #3b82f6;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
 }
 
 .viewPostLink:hover {
-  color: var(--accent-hover);
+  color: #1d4ed8;
   text-decoration: underline;
 }
 
@@ -267,10 +267,10 @@
   align-items: center;
   gap: 20px;
   padding: 24px;
-  background: var(--card-bg);
+  background: #f3f4f6;
   border-radius: 16px;
-  box-shadow: 0 4px 6px -1px var(--shadow);
-  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 6px -1px #e5e7eb;
+  border: 1px solid #e5e7eb;
   max-width: 450px;
   margin: 0 auto;
   transition: all 0.3s ease;
@@ -278,7 +278,7 @@
 
 .profileSummaryCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--shadow);
+  box-shadow: 0 8px 25px #e5e7eb;
 }
 
 .profileSummaryImage {
@@ -301,7 +301,7 @@
   margin: 0 0 6px 0;
   font-size: 20px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1f2937;
   line-height: 1.2;
   word-wrap: break-word;
   transition: color 0.3s ease;
@@ -309,7 +309,7 @@
 
 .profileSummaryInfo p {
   margin: 0 0 10px 0;
-  color: var(--text-secondary);
+  color: #4b5563;
   font-size: 15px;
   font-weight: 500;
   line-height: 1.3;
@@ -335,7 +335,7 @@
   align-items: center;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 2px solid #e5e7eb;
   transition: border-color 0.3s ease;
 }
 
@@ -390,19 +390,19 @@
   display: flex;
   align-items: center;
   padding: 16px;
-  background: var(--card-bg);
+  background: #f3f4f6;
   border-radius: 12px;
-  box-shadow: 0 2px 8px var(--shadow);
-  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px #e5e7eb;
+  border: 1px solid #e5e7eb;
   transition: all 0.2s ease;
   gap: 16px;
 }
 
 .rental-list-item:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px var(--shadow);
-  border-color: var(--accent-color);
-  background: var(--bg-secondary);
+  box-shadow: 0 4px 16px #e5e7eb;
+  border-color: #3b82f6;
+  background: #e5e7eb;
 }
 
 .rental-mini-image {
@@ -412,7 +412,7 @@
   border-radius: 10px;
   overflow: hidden;
   flex-shrink: 0;
-  border: 2px solid var(--border-color);
+  border: 2px solid #e5e7eb;
   transition: border-color 0.3s ease;
 }
 
@@ -470,7 +470,7 @@
 .rental-list-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #1f2937;
   margin: 0;
   line-height: 1.3;
   display: -webkit-box;
@@ -491,12 +491,12 @@
 .rental-list-price {
   font-size: 14px;
   font-weight: 700;
-  color: var(--accent-color);
+  color: #3b82f6;
 }
 
 .rental-list-date {
   font-size: 12px;
-  color: var(--text-secondary);
+  color: #4b5563;
   transition: color 0.3s ease;
 }
 
@@ -510,21 +510,21 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
+  background: #e5e7eb;
+  color: #4b5563;
   border-radius: 8px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e5e7eb;
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
 }
 
 .mini-view-btn:hover {
-  background: var(--accent-color);
+  background: #3b82f6;
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-  border-color: var(--accent-color);
+  border-color: #3b82f6;
 }
 
 .mini-action-icon {
@@ -535,9 +535,9 @@
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  background: var(--bg-secondary);
+  background: #e5e7eb;
   border-radius: 16px;
-  border: 2px dashed var(--border-color);
+  border: 2px dashed #e5e7eb;
   margin-top: 20px;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
@@ -550,14 +550,14 @@
 .empty-state h3 {
   font-size: 20px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1f2937;
   margin-bottom: 12px;
   transition: color 0.3s ease;
 }
 
 .empty-state p {
   font-size: 16px;
-  color: var(--text-secondary);
+  color: #4b5563;
   margin-bottom: 24px;
   line-height: 1.6;
   max-width: 400px;
@@ -603,15 +603,15 @@
 }
 
 .rental-modal-content {
-  background: var(--modal-bg);
+  background: #f9fafb;
   border-radius: 16px;
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
   overflow: hidden;
-  box-shadow: 0 25px 50px -12px var(--shadow);
+  box-shadow: 0 25px 50px -12px #e5e7eb;
   animation: modalSlideIn 0.3s ease-out;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e5e7eb;
   transition: background-color 0.3s ease;
 }
 
@@ -631,8 +631,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  border-bottom: 2px solid var(--border-color);
-  background: var(--bg-secondary);
+  border-bottom: 2px solid #e5e7eb;
+  background: #f9fafb;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -640,8 +640,8 @@
   margin: 0;
   font-size: 20px;
   font-weight: 700;
-  color: var(--text-primary);
-  background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+  color: #1f2937;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -649,8 +649,8 @@
 }
 
 .rental-modal-close {
-  background: var(--bg-secondary);
-  border: 2px solid var(--border-color);
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
   padding: 8px;
   cursor: pointer;
@@ -661,14 +661,14 @@
 }
 
 .rental-modal-close:hover {
-  background: var(--bg-primary);
+  background: #f3f4f6;
   transform: translateY(-1px);
 }
 
 .close-icon {
   width: 20px;
   height: 20px;
-  color: var(--text-secondary);
+  color: #4b5563;
   transition: color 0.3s ease;
 }
 
@@ -685,7 +685,7 @@
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 24px;
-  border: 2px solid var(--border-color);
+  border: 2px solid #e5e7eb;
   transition: border-color 0.3s ease;
 }
 
@@ -733,7 +733,7 @@
 .modal-title {
   font-size: 24px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1f2937;
   margin: 0;
   line-height: 1.3;
   transition: color 0.3s ease;
@@ -742,7 +742,7 @@
 .modal-price {
   font-size: 28px;
   font-weight: 800;
-  color: var(--accent-color);
+  color: #3b82f6;
   margin: 0;
 }
 
@@ -757,21 +757,21 @@
   flex-direction: column;
   gap: 4px;
   padding: 16px;
-  background: var(--bg-secondary);
+  background: #f9fafb;
   border-radius: 10px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e5e7eb;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .modal-info-item.modal-description {
-  background: var(--bg-secondary);
-  border-color: var(--border-color);
+  background: #f9fafb;
+  border-color: #e5e7eb;
 }
 
 .modal-label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #4b5563;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: color 0.3s ease;
@@ -780,7 +780,7 @@
 .modal-value {
   font-size: 16px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: #1f2937;
   line-height: 1.4;
   transition: color 0.3s ease;
 }
@@ -788,7 +788,7 @@
 .modal-description-text {
   margin: 0;
   line-height: 1.6;
-  color: var(--text-primary);
+  color: #1f2937;
   transition: color 0.3s ease;
 }
 

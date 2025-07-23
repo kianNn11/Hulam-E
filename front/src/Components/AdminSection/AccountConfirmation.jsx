@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import './AccountConfirmation.css';
 
 const AccountConfirmation = () => {
@@ -195,23 +195,43 @@ const AccountConfirmation = () => {
             <div className="modal">
               <button className="modal-close" onClick={closeModal}>&times;</button>
               <h3>Review Verification Request</h3>
-              <p><strong>User:</strong> {selectedUser.name}</p>
-              <p><strong>Email:</strong> {selectedUser.email}</p>
-              
-              {selectedUser.proof ? (
-                <div>
-                  <p>Verification Document:</p>
+              <div style={{textAlign:'left',marginBottom:20}}>
+                <div style={{display:'flex',alignItems:'center',gap:20,marginBottom:16}}>
                   <SafeImage 
-                    src={selectedUser.proof} 
-                    alt="Verification Document" 
-                    className="proof-preview"
-                    placeholder={<div className="placeholder-content">📄</div>}
+                    src={selectedUser.profilePic || '/placeholder-avatar.jpg'} 
+                    alt="Profile" 
+                    className="profile-pic"
                   />
+                  <span style={{fontWeight:600,fontSize:20}}>{selectedUser.name}</span>
                 </div>
-              ) : (
-                <p style={{ color: '#666' }}>No verification document submitted.</p>
-              )}
-
+                <div style={{display:'grid',gridTemplateColumns:'150px 1fr',rowGap:8}}>
+                  <span><strong>ID:</strong></span><span>{selectedUser.id}</span>
+                  <span><strong>Email:</strong></span><span>{selectedUser.email}</span>
+                  <span><strong>Birthday:</strong></span><span>{selectedUser.birthday ? new Date(selectedUser.birthday).toLocaleDateString() : 'N/A'}</span>
+                  <span><strong>Gender:</strong></span><span>{selectedUser.gender || 'N/A'}</span>
+                  <span><strong>Contact:</strong></span><span>{selectedUser.contact_number || 'N/A'}</span>
+                  <span><strong>Course & Year:</strong></span><span>{selectedUser.course_year || 'N/A'}</span>
+                  <span><strong>Social Media:</strong></span><span>{selectedUser.social_media_link ? (<a href={selectedUser.social_media_link} target="_blank" rel="noreferrer">{selectedUser.social_media_link}</a>) : 'N/A'}</span>
+                  <span><strong>Verification Status:</strong></span><span>{selectedUser.verification_status || 'Not verified'}</span>
+                  <span><strong>Account Created:</strong></span><span>{selectedUser.created_at ? new Date(selectedUser.created_at).toLocaleDateString() : 'N/A'}</span>
+                </div>
+                <div style={{marginTop:20}}>
+                  <strong>Verification Document:</strong>
+                  {selectedUser.proof ? (
+                    <div style={{marginTop:8}}>
+                      <SafeImage 
+                        src={selectedUser.proof} 
+                        alt="Verification Document" 
+                        className="proof-preview"
+                        placeholder={<div className="placeholder-content">📄</div>}
+                      />
+                      <a href={selectedUser.proof} target="_blank" rel="noreferrer">View Full Document</a>
+                    </div>
+                  ) : (
+                    <div style={{color:'#666',marginTop:8}}>No verification document submitted.</div>
+                  )}
+                </div>
+              </div>
               <div className="modal-actions">
                 <button className="confirm-button" onClick={() => handleApprove(selectedUser.id)}>
                   Approve Verification

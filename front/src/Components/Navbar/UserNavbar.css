@@ -4,12 +4,12 @@
     left: 0;
     width: 100%; /* fixed width */
     height: 78px;
-    background-color: var(--navbar-bg);
+    background-color: #f3f4f6;
     display: flex;
     align-items: center;
     font-size: 16px;
     font-weight: 400;
-    box-shadow: 0 4px 4px var(--shadow);
+    box-shadow: 0 4px 4px #e5e7eb;
     z-index: 999;
     padding: 0 30px;
     box-sizing: border-box;
@@ -38,7 +38,7 @@
 
 .user-nav-link {
   text-decoration: none;
-  color: var(--text-primary);
+  color: #1f2937;
   background: none;
   border: none;
   padding: 0;
@@ -48,17 +48,17 @@
   }
 
   .user-nav-link:hover {
-    color: var(--accent-color);
+    color: #4f46e5;
   }
 
   .user-nav-link:focus {
-    color: var(--accent-color);
-    border-bottom: 3px solid var(--accent-color);
+    color: #4f46e5;
+    border-bottom: 3px solid #4f46e5;
   }
 
   .user-nav-link.active {
-    color: var(--accent-color);
-    border-bottom: 3px solid var(--accent-color);
+    color: #4f46e5;
+    border-bottom: 3px solid #4f46e5;
 }
 
   .user-nav-buttons {
@@ -77,15 +77,15 @@
   }
 
 .user-heroIcon:hover {
-  stroke: var(--accent-color);
+  stroke: #4f46e5;
 }
 
 .user-heroIcon:focus {
-  stroke: var(--accent-color);
+  stroke: #4f46e5;
 }
 
 .user-iconButton.active .user-heroIcon {
-  stroke: var(--accent-color);
+  stroke: #4f46e5;
 }
 
 
@@ -104,7 +104,7 @@
 .user-heroIcon {
     width: 30px;
     height: 30px;
-    color: var(--text-primary);
+    color: #1f2937;
     transition: color 0.2s ease;
   }
 
@@ -122,11 +122,11 @@
   }
   
   .user-modal {
-    background: var(--modal-bg);
-    color: var(--text-primary);
+    background: #f9fafb;
+    color: #1f2937;
     padding: 1.5rem 2rem;
     border-radius: 10px;
-    box-shadow: 0 2px 12px var(--shadow);
+    box-shadow: 0 2px 12px #e5e7eb;
     text-align: center;
     width: 300px;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -139,7 +139,7 @@
   }
   
   .user-confirm-btn {
-    background-color: var(--accent-color);
+    background-color: #4f46e5;
     color: white;
     padding: 0.5rem 1rem;
     border: none;
@@ -149,7 +149,7 @@
   }
 
   .user-confirm-btn:hover {
-    background-color: var(--accent-hover);
+    background-color: #4f46e5;
   }
   
   .user-cancel-btn {
@@ -181,9 +181,9 @@
     width: 1220px;
     max-height: 95vh;
     overflow-y: auto;
-    background-color: var(--bg-primary);
+    background-color: #f9fafb;
     border-radius: 10px;
-    box-shadow: 0 10px 25px var(--shadow);
+    box-shadow: 0 10px 25px #e5e7eb;
     overflow: hidden;
     transition: background-color 0.3s ease;
   }
@@ -225,10 +225,10 @@
     position: absolute;
     top: 60px; /* adjust based on your navbar height */
     right: 0;
-    background: var(--navbar-bg);
+    background: #f3f4f6;
     padding: 1rem;
     border-radius: 0.5rem;
-    box-shadow: 0 0 10px var(--shadow);
+    box-shadow: 0 0 10px #e5e7eb;
     transition: background-color 0.3s ease;
   }
 
@@ -265,14 +265,14 @@
   
   .user-menu-content {
     width: 250px;
-    background-color: var(--navbar-bg);
-    color: var(--text-primary);
+    background-color: #f3f4f6;
+    color: #1f2937;
     position: absolute;
     top: 0;
     right: 0;
     height: 100%;
     padding: 20px;
-    box-shadow: -2px 0 10px var(--shadow);
+    box-shadow: -2px 0 10px #e5e7eb;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -290,15 +290,15 @@
     display: block;
     padding: 15px;
     font-size: 16px;
-    color: var(--text-primary);
+    color: #1f2937;
     text-decoration: none;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
   
   .user-nav-link:hover,
   .user-nav-link.active {
-    background-color: var(--bg-secondary);
-    color: var(--accent-color);
+    background-color: #e5e7eb;
+    color: #4f46e5;
   }
   
   /* Adjust the profile, cart, and logout links */
@@ -312,12 +312,12 @@
     padding: 12px 0;
     text-align: left;
     font-size: 14px;
-    color: var(--text-secondary);
+    color: #6b7280;
   }
   
   .user-menu-icons .user-nav-link:hover {
-    background-color: var(--bg-secondary);
-    color: var(--accent-color);
+    background-color: #e5e7eb;
+    color: #4f46e5;
   }
   
   /* Optional: Add spacing between links */
@@ -350,7 +350,7 @@
     width: 30px;
     height: 30px;
     cursor: pointer;
-    color: var(--text-primary);
+    color: #1f2937;
     transition: color 0.3s ease;
   }
 

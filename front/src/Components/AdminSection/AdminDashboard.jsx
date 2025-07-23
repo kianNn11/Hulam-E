@@ -21,7 +21,6 @@ const AdminDashboard = () => {
   const [transactions, setTransactions] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [imageErrors, setImageErrors] = useState(new Set());
 
   // Safe image component to prevent flickering
   const SafeImage = ({ src, alt, className, placeholder = null }) => {
@@ -56,14 +55,6 @@ const AdminDashboard = () => {
         style={{ display: isLoading ? 'none' : 'block' }}
       />
     );
-  };
-
-  // Handle image loading errors
-  const handleImageError = (imageId, fallbackSrc, event) => {
-    if (!imageErrors.has(imageId)) {
-      setImageErrors(prev => new Set([...prev, imageId]));
-      event.target.src = fallbackSrc;
-    }
   };
 
   useEffect(() => {

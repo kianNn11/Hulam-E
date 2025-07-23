@@ -6,6 +6,7 @@ import { LinkIcon, EyeIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from 'react-router-dom';
 import { rentalAPI } from '../../services/api';
 import AlertMessage from '../Common/AlertMessage';
+import SafeImage from '../Common/SafeImage';
 
 const PostContent = ({ profileData, user }) => {
   const [userRentals, setUserRentals] = useState([]);
@@ -71,6 +72,10 @@ const PostContent = ({ profileData, user }) => {
       if (rental.image.startsWith('http')) {
         return rental.image;
       }
+      if (rental.image.startsWith('/storage/')) {
+        return `http://localhost:8000${rental.image}`;
+      }
+      // If it's a relative path like 'rentals/filename.jpg'
       return `http://localhost:8000/storage/${rental.image}`;
     }
     return '/default-rental-image.jpg';
@@ -233,13 +238,7 @@ const PostContent = ({ profileData, user }) => {
                   {userRentals.map((rental) => (
                     <div key={rental.id} className="rental-list-item">
                       <div className="rental-mini-image">
-                        <img 
-                          src={getImageUrl(rental)} 
-                          alt={rental.title}
-                          onError={(e) => {
-                            e.target.src = '/default-rental-image.jpg';
-                          }}
-                        />
+                        <SafeImage src={getImageUrl(rental)} alt={rental.title} className="rental-mini-image-img" />
                         <div className={`mini-status-badge status-${rental.status}`}>
                           {rental.status === 'available' ? '✓' : rental.status === 'rented' ? '✗' : '⏸'}
                         </div>
@@ -290,36 +289,25 @@ const PostContent = ({ profileData, user }) => {
                 <XMarkIcon className="close-icon" />
               </button>
             </div>
-
             <div className="rental-modal-body">
               <div className="rental-modal-image">
-                <img 
-                  src={getImageUrl(selectedRental)} 
-                  alt={selectedRental.title}
-                  onError={(e) => {
-                    e.target.src = '/default-rental-image.jpg';
-                  }}
-                />
+                <SafeImage src={getImageUrl(selectedRental)} alt={selectedRental.title} className="rental-modal-image-img" />
                 <div className={`modal-status-badge status-${selectedRental.status}`}>
                   {selectedRental.status}
                 </div>
               </div>
-
               <div className="rental-modal-details">
                 <h2 className="modal-title">{selectedRental.title}</h2>
                 <p className="modal-price">₱{parseFloat(selectedRental.price).toFixed(2)}</p>
-                
                 <div className="modal-info-grid">
                   <div className="modal-info-item">
                     <span className="modal-label">Status</span>
                     <span className="modal-value">{selectedRental.status === 'available' ? 'Available for Rent' : selectedRental.status === 'rented' ? 'Currently Rented' : 'Unavailable'}</span>
                   </div>
-                  
                   <div className="modal-info-item">
                     <span className="modal-label">Location</span>
                     <span className="modal-value">{selectedRental.location}</span>
                   </div>
-                  
                   <div className="modal-info-item">
                     <span className="modal-label">Posted Date</span>
                     <span className="modal-value">
@@ -330,7 +318,6 @@ const PostContent = ({ profileData, user }) => {
                       })}
                     </span>
                   </div>
-                  
                   <div className="modal-info-item modal-description">
                     <span className="modal-label">Description</span>
                     <p className="modal-value modal-description-text">{selectedRental.description}</p>
@@ -341,7 +328,6 @@ const PostContent = ({ profileData, user }) => {
           </div>
         </div>
       )}
-
     </main>
   );
 };

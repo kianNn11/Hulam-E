@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/static/css/main.6d5f60b8.css",
+    "main.js": "/static/js/main.b083ea5f.js",
+    "static/media/pic3.jpg": "/static/media/pic3.2bd775f4b818cff21d03.jpg",
+    "static/media/contact.jpg": "/static/media/contact.68078d20a5bfdfcd6390.jpg",
+    "static/media/landing.png": "/static/media/landing.7e9cb0d548336bd2643b.png",
+    "static/media/salem.JPG": "/static/media/salem.a70bec289f9a9f6a4374.JPG",
+    "static/media/pic2.jpg": "/static/media/pic2.09da8094d97829e566fc.jpg",
+    "static/media/banoson.jpg": "/static/media/banoson.ab236699626a276abc97.jpg",
+    "static/media/grijalvo.jpg": "/static/media/grijalvo.ebccf7f74a92ad2d8f4a.jpg",
+    "static/media/medina.jpg": "/static/media/medina.dfb0e8f94d25babe4431.jpg",
+    "static/media/logo.png": "/static/media/logo.1934b1e24113d80e0baf.png",
+    "static/media/banner.jpg": "/static/media/banner.ef9e80a7c759bad6ddfe.jpg",
+    "static/media/owl.png": "/static/media/owl.bee6cdbe483fa2523eb4.png",
+    "index.html": "/index.html",
+    "main.6d5f60b8.css.map": "/static/css/main.6d5f60b8.css.map",
+    "main.b083ea5f.js.map": "/static/js/main.b083ea5f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6d5f60b8.css",
+    "static/js/main.b083ea5f.js"
+  ]
+}

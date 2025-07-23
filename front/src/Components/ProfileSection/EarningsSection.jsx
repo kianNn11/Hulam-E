@@ -3,6 +3,7 @@ import './EarningsSection.css';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { userAPI } from '../../services/api';
 import { useAuth } from '../../Context/AuthContext';
+import { Tooltip } from '@mui/material';
 
 const EarningsSection = () => {
   const { user, isLoggedIn } = useAuth();
@@ -167,33 +168,64 @@ const EarningsSection = () => {
   return (
     <main className="earnings">
       <section className="earningsSection">
-        <div className="earningsHeader">
-          <h2 className="sectionTitle">Earnings Overview</h2>
-          <div className="totalEarnings">
-            <h3 className="earningsAmount">₱{earningsData.totalEarnings.toLocaleString()}</h3>
-            <div className="earningsStats">
-              <p>Available Balance: ₱{earningsData.availableBalance.toLocaleString()}</p>
-              <p>Pending Earnings: ₱{earningsData.pendingPayouts.toLocaleString()}</p>
-              <p>Total Rentals: {earningsData.totalRentals}</p>
-              <p>Active Rentals: {earningsData.activeRentals}</p>
-            </div>
+        <div className="earningsHeader formal-header">
+          <div>
+            <h2 className="sectionTitle">Earnings Overview</h2>
+            <p className="sectionSubtitle">Track your rental income and borrowing activity</p>
           </div>
           <button 
             onClick={handleRefresh}
             className="refresh-button"
+            title="Refresh earnings data"
           >
             Refresh
           </button>
         </div>
-
-        {debugInfo && (
-          <div className="debug-info-detailed">
-            Debug: {debugInfo}
+        <div className="earningsSummaryCards">
+          <div className="summaryCard">
+            <Tooltip title="Total amount you've earned from rentals" placement="top">
+              <div>
+                <div className="summaryLabel">Total Earnings</div>
+                <div className="summaryValue total">₱{earningsData.totalEarnings.toLocaleString()}</div>
+              </div>
+            </Tooltip>
           </div>
-        )}
-
-        <div className="transactionHistory">
-          <h3 className="sectionTitle">Transaction History ({earningsData.transactionCount} total)</h3>
+          <div className="summaryCard">
+            <Tooltip title="Available balance you can withdraw" placement="top">
+              <div>
+                <div className="summaryLabel">Available Balance</div>
+                <div className="summaryValue">₱{earningsData.availableBalance.toLocaleString()}</div>
+              </div>
+            </Tooltip>
+          </div>
+          <div className="summaryCard">
+            <Tooltip title="Earnings that are pending payout" placement="top">
+              <div>
+                <div className="summaryLabel">Pending Earnings</div>
+                <div className="summaryValue">₱{earningsData.pendingPayouts.toLocaleString()}</div>
+              </div>
+            </Tooltip>
+          </div>
+          <div className="summaryCard">
+            <Tooltip title="Total number of rentals you've completed" placement="top">
+              <div>
+                <div className="summaryLabel">Total Rentals</div>
+                <div className="summaryValue">{earningsData.totalRentals}</div>
+              </div>
+            </Tooltip>
+          </div>
+          <div className="summaryCard">
+            <Tooltip title="Number of rentals currently active" placement="top">
+              <div>
+                <div className="summaryLabel">Active Rentals</div>
+                <div className="summaryValue">{earningsData.activeRentals}</div>
+              </div>
+            </Tooltip>
+          </div>
+        </div>
+        {/* Transaction History */}
+        <div className="transactionHistory formal-card">
+          <h3 className="sectionTitle">Transaction History <span className="count">({earningsData.transactionCount} total)</span></h3>
           {earningsData.transactions.length === 0 ? (
             <div className="no-transactions">
               <p>No transactions yet. Start renting out your items to see earnings here!</p>
@@ -228,16 +260,15 @@ const EarningsSection = () => {
             </ul>
           )}
         </div>
-
-        <div className="borrowedItemsSection">
+        {/* Borrowed Items Section */}
+        <div className="borrowedItemsSection formal-card">
           <div className="borrowedHeader">
-            <h3 className="sectionTitle">Your Borrowed Items ({earningsData.borrowedStats.totalBorrowed} total)</h3>
+            <h3 className="sectionTitle">Your Borrowed Items <span className="count">({earningsData.borrowedStats.totalBorrowed} total)</span></h3>
             <div className="borrowedStats">
-              <p>Total Spent: ₱{earningsData.borrowedStats.totalSpent.toLocaleString()}</p>
-              <p>Active Rentals: {earningsData.borrowedStats.activeBorrowed}</p>
+              <p>Total Spent: <span className="bold">₱{earningsData.borrowedStats.totalSpent.toLocaleString()}</span></p>
+              <p>Active Rentals: <span className="bold">{earningsData.borrowedStats.activeBorrowed}</span></p>
             </div>
           </div>
-          
           {earningsData.borrowedItems.length === 0 ? (
             <div className="no-borrowed-items">
               <p>No borrowed items yet. Start renting items from other users!</p>
@@ -259,7 +290,6 @@ const EarningsSection = () => {
                       <div className="no-image">📦</div>
                     )}
                   </div>
-                  
                   <div className="borrowedItemDetails">
                     <h4 className="borrowedItemTitle">{item.rentalTitle}</h4>
                     <p className="borrowedItemOwner">From: {item.ownerName}</p>
@@ -273,7 +303,6 @@ const EarningsSection = () => {
                       {item.status}
                     </span>
                   </div>
-                  
                   <div className="borrowedItemMeta">
                     <CalendarIcon className="calendarIcon" />
                     <p>{new Date(item.date).toLocaleDateString()}</p>

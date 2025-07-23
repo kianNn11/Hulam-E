@@ -244,11 +244,7 @@ function Admin() {
           </button>
         </form>
 
-        <div className="admin-credentials-info">
-          <strong>Default Admin Credentials:</strong><br />
-          Email: admin@hulame.com<br />
-          Password: admin123
-        </div>
+        {/* Removed default admin credentials info */}
       </section>
     </main>
   );

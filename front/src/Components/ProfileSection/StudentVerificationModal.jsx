@@ -48,7 +48,7 @@ const StudentVerificationModal = ({ onClose, onUpload, loading }) => {
           <input
             id="cor-upload"
             type="file"
-            accept="image/*,.pdf,.doc,.docx"
+            accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
             onChange={handleFileChange}
             disabled={loading}
             hidden

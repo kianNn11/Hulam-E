@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import banner from '../Assets/banner.jpg';
-import itemImage from '../Assets/calculator.jpg';
 import './RentalSection.css';
 import { EyeIcon } from "@heroicons/react/24/outline";
 import ViewDetails from './ViewDetails';
 import { rentalAPI } from '../../services/api';
+import SafeImage from '../Common/SafeImage';
 
 const RentalSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,15 +19,10 @@ const RentalSection = () => {
     location: ''
   });
 
-  useEffect(() => {
-    fetchRentals();
-  }, []);
-
-  const fetchRentals = async (params = {}) => {
+  const fetchRentals = useCallback(async (params = {}) => {
     try {
       setLoading(true);
       setError('');
-      
       const queryParams = new URLSearchParams({
         ...params,
         ...(searchTerm && { search: searchTerm }),
@@ -35,7 +30,6 @@ const RentalSection = () => {
         ...(filters.max_price && { max_price: filters.max_price }),
         ...(filters.location && { location: filters.location })
       });
-
       const response = await rentalAPI.getRentals(`?${queryParams}`);
       setRentals(response.data.data || []);
     } catch (err) {
@@ -44,7 +38,11 @@ const RentalSection = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, filters]);
+
+  useEffect(() => {
+    fetchRentals();
+  }, [fetchRentals]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -62,15 +60,31 @@ const RentalSection = () => {
   };
 
   const getImageUrl = (rental) => {
+    // Prefer images_url (array) if present and non-empty
+    if (rental.images_url && Array.isArray(rental.images_url) && rental.images_url.length > 0) {
+      return rental.images_url[0];
+    }
+    // Fallback to image_url if present
+    if (rental.image_url) {
+      return rental.image_url;
+    }
+    // Fallback to old logic for legacy data
     if (rental.image) {
-      // If image starts with 'http', it's already a full URL
       if (rental.image.startsWith('http')) {
         return rental.image;
       }
-      // Otherwise, construct the URL
-      return `http://localhost:8000/storage/${rental.image}`;
+      if (rental.image.startsWith('data:image/')) {
+        return rental.image;
+      }
+      if (rental.image.startsWith('/storage/')) {
+        return `http://localhost:8000${rental.image}`;
+      }
+      if (rental.image.startsWith('rentals/')) {
+        return `http://localhost:8000/storage/${rental.image}`;
+      }
+      return `http://localhost:8000/storage/rentals/${rental.image}`;
     }
-    return itemImage; // Fallback to default image
+    return '/default-rental-image.jpg';
   };
 
   return (
@@ -161,14 +175,7 @@ const RentalSection = () => {
                   {rentals.map((rental) => (
                     <article key={rental.id} className="rental-card">
                       <div className="rental-image-container">
-                        <img 
-                          src={getImageUrl(rental)} 
-                          alt={rental.title} 
-                          className="rental-image"
-                          onError={(e) => {
-                            e.target.src = itemImage; // Fallback to default image
-                          }}
-                        />
+                        <SafeImage src={getImageUrl(rental)} alt={rental.title} className="rental-image" />
                       </div>
 
                       <div className="rental-card-content">

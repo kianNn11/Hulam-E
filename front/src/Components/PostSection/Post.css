@@ -1,5 +1,5 @@
 .rentalPostUp {
-  background-color: var(--bg-primary);
+  background-color: #f9fafb;
   font-family: 'Poppins', sans-serif;
   min-height: 100vh;
   width: 100%;
@@ -9,7 +9,7 @@
 }
 
 .rentalPostPopUp {
-  background-color: var(--bg-primary);
+  background-color: #f9fafb;
   font-family: 'Poppins', sans-serif;
   overflow: hidden; /* Prevent scrolling */
   width: 100%; /* Make sure it's responsive */
@@ -51,11 +51,13 @@
 
 .createaPost {
   font-size: 36px;
-  background: linear-gradient(to left, #1877F2 41%, var(--accent-color) 100%);
+  background: linear-gradient(to left, #001f4d 10%, #2563eb 90%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0px 1px 1px var(--shadow);
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: none;
 }
 
 .post-form {
@@ -89,7 +91,7 @@
 }
 
 .post-image {
-  border: 2px solid var(--text-primary);
+  border: 2px solid #4b5563;
   border-radius: 30px;
   flex-direction: column;
   flex-grow: 1;
@@ -104,8 +106,8 @@
 }
 
 .post-image:hover {
-  background-color: var(--bg-secondary);
-  border-color: var(--accent-color);
+  background-color: #f3f4f6;
+  border-color: #4f46e5;
 }
 
 .post-div5 {
@@ -135,7 +137,7 @@
 }
 
 .upload1Photoonly {
-  color: var(--text-secondary);
+  color: #4b5563;
   text-align: center;
   margin-top: 11px;
   font-family: Poppins, sans-serif;
@@ -155,7 +157,7 @@
 }
 
 .post-div6 {
-  color: var(--text-primary);
+  color: #4b5563;
   align-self: stretch;
   margin-top: -30px;
   font-family: Poppins, sans-serif;
@@ -168,7 +170,7 @@
 .post-btn {
   color: #fff;
   white-space: nowrap;
-  background-color: var(--accent-color);
+  background-color: #4f46e5;
   border: none;
   border-radius: 10px;
   padding: 5px 40px;
@@ -183,7 +185,7 @@
 }
 
 .post-btn:hover {
-  background-color: var(--accent-hover);
+  background-color: #6366f1;
 }
 
 .formInput {
@@ -192,7 +194,7 @@
   background: transparent;
   font-family: Poppins, sans-serif;
   font-size: 16px;
-  color: var(--text-primary);
+  color: #4b5563;
 }
 
 .floating-input {
@@ -204,12 +206,12 @@
 .floating-input input,
 .floating-input textarea {
   width: 100%;
-  border: 2px solid var(--text-primary);
+  border: 2px solid #4b5563;
   border-radius: 10px;
   padding: 20px 12px 8px;
   font-family: Poppins, sans-serif;
-  background-color: var(--input-bg);
-  color: var(--text-primary);
+  background-color: #f9fafb;
+  color: #4b5563;
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -217,10 +219,10 @@
   position: absolute;
   left: 12px;
   top: 16px;
-  background-color: var(--input-bg);
+  background-color: #f9fafb;
   padding: 0 4px;
   font-size: 16px;
-  color: var(--text-secondary);
+  color: #9ca3af;
   pointer-events: none;
   transition: 0.2s ease all;
 }
@@ -228,8 +230,8 @@
 .floating-input input:focus,
 .floating-input textarea:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .floating-input input:focus + label,
@@ -238,8 +240,8 @@
 .floating-input textarea:not(:placeholder-shown) + label {
   top: 4px;
   font-size: 12px;
-  color: var(--accent-color);
-  background-color: var(--input-bg);
+  color: #4f46e5;
+  background-color: #f9fafb;
 }
 
 .requiredField {
@@ -293,7 +295,7 @@
   height: 150px;
   object-fit: cover;
   border-radius: 8px;
-  border: 2px solid var(--text-primary);
+  border: 2px solid #4b5563;
   margin-bottom: 10px;
   transition: border-color 0.3s ease;
 }
@@ -347,7 +349,7 @@
 /* Disabled Input States */
 input:disabled,
 textarea:disabled {
-  background-color: var(--bg-secondary);
+  background-color: #f3f4f6;
   cursor: not-allowed;
   opacity: 0.6;
 }

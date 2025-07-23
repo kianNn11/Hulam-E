@@ -4,7 +4,7 @@
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
-    background-color: var(--bg-primary);
+    background-color: #f0f2f5;
     display: flex;
     margin-bottom: 0; 
     transition: background-color 0.3s ease;
@@ -13,7 +13,7 @@
 /* Left section - Welcome */
 .admin-left {
     color: #fff;
-    background-color: var(--accent-color);
+    background-color: #4f46e5;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -35,7 +35,7 @@
 .admin-back-btn {
     color: #fff;
     cursor: pointer;
-    background-color: var(--accent-color);
+    background-color: #4f46e5;
     border: 5px solid #fff;
     border-radius: 10px;
     margin-top: 0px;
@@ -47,7 +47,7 @@
 }
 
 .admin-back-btn:hover {
-    background-color: var(--accent-hover);
+    background-color: #6366f1;
 }
 
 /* Right section -.admin form */
@@ -62,8 +62,8 @@
 
 /*.admin heading */
 .admin-title {
-    color: var(--text-primary);
-    text-shadow: 0 4px 4px var(--shadow);
+    color: #374151;
+    text-shadow: 0 4px 4px #e5e7eb;
     margin-bottom: 20px;
     font-family: Poppins, sans-serif;
     font-size: 40px;
@@ -82,8 +82,8 @@
 
 /* Username input */
 .admin-username {
-    color: var(--text-primary);
-    border: 2px solid var(--border-color);
+    color: #374151;
+    border: 2px solid #d1d5db;
     border-radius: 10px;
     width: 385px;
     height: 44px;
@@ -92,14 +92,14 @@
     font-family: Poppins, sans-serif;
     font-size: 16px;
     font-weight: 400;
-    background-color: var(--input-bg);
+    background-color: #f9fafb;
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Password container */
 .admin-pass {
-    color: var(--text-primary);
-    border: 2px solid var(--border-color);
+    color: #374151;
+    border: 2px solid #d1d5db;
     border-radius: 10px;
     align-items: center;
     width: 385px;
@@ -111,7 +111,7 @@
     font-weight: 400;
     display: flex;
     position: relative;
-    background-color: var(--input-bg);
+    background-color: #f9fafb;
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -124,7 +124,7 @@
     outline: none;
     font-family: Poppins, sans-serif;
     font-size: 16px;
-    color: var(--text-primary);
+    color: #374151;
 }
 
 .admin-forgotPasswordContainer {
@@ -138,7 +138,7 @@
 .admin-forgotPasswordLink {
     background: none;
     border: none;
-    color: var(--text-primary);
+    color: #374151;
     cursor: pointer;
     font-family: Poppins, sans-serif;
     font-size: 14px;
@@ -147,7 +147,7 @@
 }
 
 .admin-forgotPasswordLink:hover {
-    color: var(--accent-color);
+    color: #4f46e5;
 }
 
 .admin-errorMessage {
@@ -180,14 +180,14 @@
 .admin-eyeIcon {
     width: 24px;
     height: 24px;
-    color: var(--accent-color);
+    color: #4f46e5;
 }
 
 /*.admin button */
 .admin-login-btn {
     color: #fff;
     cursor: pointer;
-    background-color: var(--accent-color);
+    background-color: #4f46e5;
     border: none;
     border-radius: 10px;
     margin-top: 0px;
@@ -200,7 +200,7 @@
 }
 
 .admin-login-btn:hover {
-    background-color: var(--accent-hover);
+    background-color: #6366f1;
 }
 
   
@@ -480,17 +480,17 @@
 .admin-credentials-info {
   margin-top: 20px;
   padding: 12px;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 12px;
-  color: var(--text-secondary);
+  color: #4b5563;
   line-height: 1.4;
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .admin-credentials-info strong {
-  color: var(--text-primary);
+  color: #374151;
   font-weight: 600;
   transition: color 0.3s ease;
 }
@@ -524,7 +524,7 @@
 .admin-username:focus,
 .admin-pass:focus {
     outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
   

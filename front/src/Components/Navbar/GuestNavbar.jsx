@@ -3,14 +3,11 @@ import './Navbar.css';
 import logo from '../Assets/logo.png';
 import { Link, useLocation } from 'react-router-dom';
 import { Bars3Icon } from '@heroicons/react/24/solid';
-import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
-import { useTheme } from '../../Context/ThemeContext';
 
 const GuestNavbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const location = useLocation();
-  const { isDarkMode, toggleTheme } = useTheme();
 
   const getActiveMenu = () => {
     switch (location.pathname) {
@@ -87,17 +84,6 @@ const GuestNavbar = () => {
 
       {/* Login Button */}
       <div className="login-nav-buttons">
-        <button 
-          className="theme-toggle-btn"
-          onClick={toggleTheme}
-          aria-label="Toggle Theme"
-        >
-          {isDarkMode ? (
-            <SunIcon className="theme-icon" />
-          ) : (
-            <MoonIcon className="theme-icon" />
-          )}
-        </button>
         <Link to="/login">
           <button className="login-btn">Login</button>
         </Link>

@@ -4,8 +4,16 @@ import './Checkout.css';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../../Context/AuthContext';
 import { rentalAPI } from '../../services/api';
-import defaultImage from '../Assets/calculator.jpg';
 import AlertMessage from '../Common/AlertMessage';
+import SafeImage from '../Common/SafeImage';
+
+// Helper to check if item has real image data
+const hasRealImage = (item) => {
+  if (item.images_url && Array.isArray(item.images_url) && item.images_url.length > 0) return true;
+  if (item.image_url) return true;
+  if (item.image) return true;
+  return false;
+};
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -36,17 +44,15 @@ const Checkout = () => {
     // Check if there's a rental item passed via router state
     const passedRental = location.state?.rental;
     
+    let initialItems = storedItems;
+    
     if (passedRental) {
-      // Transform rental object to match the expected format
+      // Preserve all image fields for robust image display
       const rentalItem = {
+        ...passedRental, // keep all fields including images_url, image_url, image
         id: passedRental.id,
         name: passedRental.title,
-        price: parseFloat(passedRental.price),
-        image: passedRental.image ? 
-          (passedRental.image.startsWith('http') ? 
-            passedRental.image : 
-            `http://localhost:8000/storage/${passedRental.image}`) : 
-          defaultImage
+        price: parseFloat(passedRental.price)
       };
       
       console.log('Adding rental item to cart:', rentalItem); // Debug log
@@ -56,19 +62,20 @@ const Checkout = () => {
       
       if (existingItemIndex === -1) {
         // Add new item to cart
-        const updatedItems = [...storedItems, rentalItem];
-        setRentedItems(updatedItems);
-        localStorage.setItem('rentedItems', JSON.stringify(updatedItems));
-        console.log('Item added to cart. Total items:', updatedItems.length); // Debug log
+        initialItems = [...storedItems, rentalItem];
+        localStorage.setItem('rentedItems', JSON.stringify(initialItems));
+        console.log('Item added to cart. Total items:', initialItems.length); // Debug log
       } else {
         // Item already exists, just set the stored items
-        setRentedItems(storedItems);
+        initialItems = storedItems;
         console.log('Item already in cart'); // Debug log
       }
     } else {
-      setRentedItems(storedItems);
+      initialItems = storedItems;
       console.log('No rental passed via state. Using stored items:', storedItems.length); // Debug log
     }
+    
+    setRentedItems(initialItems);
     
     // Auto-fill user information if logged in
     if (isLoggedIn && user) {
@@ -77,6 +84,26 @@ const Checkout = () => {
         name: user.name || '',
         contactNumber: user.contact_number || ''
       }));
+    }
+    
+    // Fetch latest rental data for each item if missing image fields
+    const fetchMissingImages = async () => {
+      const updatedItems = await Promise.all(initialItems.map(async (item) => {
+        if (hasRealImage(item)) return item;
+        try {
+          const res = await rentalAPI.getRental(item.id);
+          console.log('Fetched rental from API:', res.data);
+          // Merge the latest data into the item
+          return { ...item, ...res.data.data };
+        } catch (e) {
+          return item;
+        }
+      }));
+      setRentedItems(updatedItems);
+      localStorage.setItem('rentedItems', JSON.stringify(updatedItems));
+    };
+    if (initialItems.some(item => !hasRealImage(item))) {
+      fetchMissingImages();
     }
   }, [isLoggedIn, user, location.state]);
 
@@ -243,35 +270,49 @@ const Checkout = () => {
             {rentedItems.length === 0 ? (
               <p className="empty-message">No rented items yet.</p>
             ) : (
-              rentedItems.map((item) => (
-                <div key={item.id} className="rented-item">
-                  <div className="image-wrapper">
-                    <img 
-                      src={item.image} 
-                      alt={item.name}
-                      onError={(e) => {
-                        e.target.src = defaultImage; // Fallback to default image
-                      }}
-                    />
-                    <p className="item-name">{item.name}</p>
-                  </div>
-                  <div className="item-details">
-                    <div className="price-info">
-                      <div>
-                        <p>Price</p>
-                        <p>₱{item.price.toFixed(2)}</p>
-                      </div>
-                      <div>
-                        <p>Sub Total</p>
-                        <p>₱{item.price.toFixed(2)}</p>
-                      </div>
+              rentedItems.map((item) => {
+                // Improved image logic: only use real backend images, otherwise show default
+                let imageUrl = '/default-rental-image.jpg';
+                if (item.images_url && Array.isArray(item.images_url) && item.images_url.length > 0) {
+                  const img = item.images_url[0];
+                  if (img.startsWith('http')) imageUrl = img;
+                  else if (img.startsWith('/storage/')) imageUrl = `http://localhost:8000${img}`;
+                  else if (img.startsWith('rentals/')) imageUrl = `http://localhost:8000/storage/${img}`;
+                  else imageUrl = '/default-rental-image.jpg';
+                } else if (item.image_url) {
+                  if (item.image_url.startsWith('http')) imageUrl = item.image_url;
+                  else if (item.image_url.startsWith('/storage/')) imageUrl = `http://localhost:8000${item.image_url}`;
+                  else if (item.image_url.startsWith('rentals/')) imageUrl = `http://localhost:8000/storage/${item.image_url}`;
+                  else imageUrl = '/default-rental-image.jpg';
+                } else if (item.image) {
+                  if (item.image.startsWith('http')) imageUrl = item.image;
+                  else if (item.image.startsWith('data:image/')) imageUrl = item.image;
+                  else if (item.image.startsWith('/storage/')) imageUrl = `http://localhost:8000${item.image}`;
+                  else if (item.image.startsWith('rentals/')) imageUrl = `http://localhost:8000/storage/${item.image}`;
+                  else imageUrl = '/default-rental-image.jpg';
+                }
+                console.log('Checkout image debug:', {item, imageUrl});
+                return (
+                  <div key={item.id} className="rented-item enhanced-rented-item">
+                    <div className="enhanced-image-wrapper">
+                      <SafeImage 
+                        src={imageUrl} 
+                        alt={item.name}
+                        className="enhanced-checkout-item-image"
+                      />
                     </div>
-                    <button className="remove-button" onClick={() => removeItem(item.id)}>
-                      Remove
-                    </button>
+                    <div className="enhanced-item-details">
+                      <div className="enhanced-item-title">{item.name}</div>
+                      <div className="enhanced-price-info">
+                        <span>₱{item.price.toFixed(2)}</span>
+                      </div>
+                      <button className="remove-button" onClick={() => removeItem(item.id)}>
+                        Remove
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
