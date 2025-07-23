@@ -30,6 +30,21 @@ class Rental extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function images()
+    {
+        return $this->hasMany(RentalImage::class);
+    }
+
+    public function getImagesUrlAttribute()
+    {
+        if ($this->relationLoaded('images')) {
+            return $this->images->map(function($img) {
+                return asset('storage/' . $img->image_path);
+            });
+        }
+        return [];
+    }
+
     // Scope for available rentals
     public function scopeAvailable($query)
     {

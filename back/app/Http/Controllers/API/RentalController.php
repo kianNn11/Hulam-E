@@ -51,7 +51,12 @@ class RentalController extends Controller
         $rentals = $query->paginate(12);
 
         return response()->json([
-            'data' => $rentals->items(),
+            'data' => collect($rentals->items())->map(function($rental) {
+                $rentalArr = $rental->toArray();
+                $rentalArr['image_url'] = $rental->image ? asset('storage/' . $rental->image) : null;
+                $rentalArr['images_url'] = $rental->images ? $rental->images->map(function($img) { return asset('storage/' . $img->image_path); }) : [];
+                return $rentalArr;
+            }),
             'meta' => [
                 'current_page' => $rentals->currentPage(),
                 'total' => $rentals->total(),
@@ -68,7 +73,9 @@ class RentalController extends Controller
             'description' => 'required|string|min:10|max:1000',
             'price' => 'required|numeric|min:0.01',
             'location' => 'required|string|min:2|max:255',
-            'image' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:5120', // 5MB max
+            'image' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:15360', // legacy single image
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,jpg,png,gif|max:15360',
         ], [
             'title.required' => 'Title is required',
             'title.min' => 'Title must be at least 3 characters',
@@ -81,7 +88,7 @@ class RentalController extends Controller
             'location.required' => 'Location is required',
             'location.min' => 'Location must be at least 2 characters',
             'image.image' => 'File must be an image',
-            'image.max' => 'Image size cannot exceed 5MB',
+            'image.max' => 'Image size cannot exceed 15MB',
         ]);
 
         if ($validator->fails()) {
@@ -100,7 +107,7 @@ class RentalController extends Controller
             'status' => 'available', // Default status
         ];
 
-        // Handle image upload
+        // Handle legacy single image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . uniqid() . '_' . preg_replace('/[^a-zA-Z0-9.]/', '_', $image->getClientOriginalName());
@@ -109,20 +116,40 @@ class RentalController extends Controller
         }
 
         $rental = Rental::create($rentalData);
-        $rental->load('user:id,name,email');
+
+        // Handle multiple images upload (only save the first image if present)
+        if ($request->hasFile('images')) {
+            $images = $request->file('images');
+            if (is_array($images) && count($images) > 0) {
+                $img = $images[0];
+                $imgName = time() . '_' . uniqid() . '_' . preg_replace('/[^a-zA-Z0-9.]/', '_', $img->getClientOriginalName());
+                $imgPath = $img->storeAs('rentals', $imgName, 'public');
+                $rental->images()->create(['image_path' => $imgPath]);
+            }
+        }
+
+        $rental->load('user:id,name,email', 'images');
+
+        $rentalArr = $rental->toArray();
+        $rentalArr['image_url'] = $rental->image ? asset('storage/' . $rental->image) : null;
+        $rentalArr['images_url'] = ($rental->images && $rental->images->count() > 0)
+            ? [asset('storage/' . $rental->images->first()->image_path)]
+            : [];
 
         return response()->json([
-            'data' => $rental,
+            'data' => $rentalArr,
             'message' => 'Rental posted successfully! Your item is now available for rent.'
         ], 201);
     }
 
     public function show(Rental $rental)
     {
-        $rental->load('user:id,name,email,contact_number');
-        
+        $rental->load('user:id,name,email,contact_number', 'images');
+        $rentalArr = $rental->toArray();
+        $rentalArr['image_url'] = $rental->image ? asset('storage/' . $rental->image) : null;
+        $rentalArr['images_url'] = $rental->images ? $rental->images->map(function($img) { return asset('storage/' . $img->image_path); }) : [];
         return response()->json([
-            'data' => $rental
+            'data' => $rentalArr
         ]);
     }
 
@@ -138,8 +165,10 @@ class RentalController extends Controller
             'description' => 'sometimes|string|min:10|max:1000',
             'price' => 'sometimes|numeric|min:0.01',
             'location' => 'sometimes|string|min:2|max:255',
-            'image' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:5120',
+            'image' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:15360',
             'status' => 'sometimes|in:available,rented,unavailable',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,jpg,png,gif|max:15360',
         ]);
 
         if ($validator->fails()) {
@@ -151,7 +180,7 @@ class RentalController extends Controller
 
         $updateData = $request->only(['title', 'description', 'price', 'location', 'status']);
 
-        // Handle image upload
+        // Handle legacy single image upload
         if ($request->hasFile('image')) {
             // Delete old image if exists
             if ($rental->image && Storage::disk('public')->exists($rental->image)) {
@@ -165,10 +194,35 @@ class RentalController extends Controller
         }
 
         $rental->update($updateData);
-        $rental->load('user:id,name,email');
+
+        // Handle new images upload (replace existing with only the first new image if present)
+        if ($request->hasFile('images')) {
+            // Delete all previous images
+            foreach ($rental->images as $oldImg) {
+                if (Storage::disk('public')->exists($oldImg->image_path)) {
+                    Storage::disk('public')->delete($oldImg->image_path);
+                }
+                $oldImg->delete();
+            }
+            $images = $request->file('images');
+            if (is_array($images) && count($images) > 0) {
+                $img = $images[0];
+                $imgName = time() . '_' . uniqid() . '_' . preg_replace('/[^a-zA-Z0-9.]/', '_', $img->getClientOriginalName());
+                $imgPath = $img->storeAs('rentals', $imgName, 'public');
+                $rental->images()->create(['image_path' => $imgPath]);
+            }
+        }
+
+        $rental->load('user:id,name,email', 'images');
+
+        $rentalArr = $rental->toArray();
+        $rentalArr['image_url'] = $rental->image ? asset('storage/' . $rental->image) : null;
+        $rentalArr['images_url'] = ($rental->images && $rental->images->count() > 0)
+            ? [asset('storage/' . $rental->images->first()->image_path)]
+            : [];
 
         return response()->json([
-            'data' => $rental,
+            'data' => $rentalArr,
             'message' => 'Rental updated successfully'
         ]);
     }
