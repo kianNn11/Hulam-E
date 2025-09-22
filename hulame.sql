@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 23, 2025 at 10:08 AM
+-- Generation Time: Jul 23, 2025 at 05:03 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -173,8 +173,12 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`id`, `type`, `notifiable_type`, `notifiable_id`, `data`, `read_at`, `created_at`, `updated_at`) VALUES
+('02f70983-844f-4041-a90e-27f9a922ad04', 'rental_approved', 'App\\Models\\User', 6, '{\"title\":\"Rental Request Approved!\",\"message\":\"Your rental request for \'Laravel\' has been approved by Customer\",\"transaction_id\":2,\"rental_id\":8}', NULL, '2025-07-23 06:49:20', '2025-07-23 06:49:20'),
+('14803965-1b49-4074-97a1-d34fbded3788', 'rental_request', 'App\\Models\\User', 5, '{\"title\":\"New Rental Request\",\"message\":\"CustomerOne wants to rent your \'Laravel\' via checkout\",\"transaction_id\":2,\"rental_id\":8,\"renter_id\":6,\"total_amount\":100,\"contact_number\":\"09123123123\",\"rent_duration\":\"asdasdasd\",\"payment_method\":\"cash_on_delivery\"}', NULL, '2025-07-23 06:48:53', '2025-07-23 06:48:53'),
+('194333d2-656e-466b-a8ed-dca4d75f44ba', 'checkout_complete', 'App\\Models\\User', 6, '{\"title\":\"Checkout Complete\",\"message\":\"Your rental request for 1 item(s) has been submitted. Total: \\u20b1110.00\",\"total_amount\":110,\"platform_fee\":10,\"subtotal\":100,\"payment_method\":\"cash_on_delivery\",\"item_count\":1,\"status\":\"pending\"}', NULL, '2025-07-23 06:48:53', '2025-07-23 06:48:53'),
 ('2fd7e398-0649-4fad-9e6c-66c91bbb2458', 'rental_completed', 'App\\Models\\User', 2, '{\"title\":\"Rental Completed\",\"message\":\"The rental for \'asdasdas\' has been marked as completed\",\"transaction_id\":1,\"rental_id\":5}', NULL, '2025-07-22 23:49:12', '2025-07-22 23:49:12'),
 ('a4cf3057-f97d-4c83-9eca-8c6fc086c683', 'checkout_complete', 'App\\Models\\User', 4, '{\"title\":\"Checkout Complete\",\"message\":\"Your rental request for 1 item(s) has been submitted. Total: \\u20b1232.00\",\"total_amount\":232,\"platform_fee\":10,\"subtotal\":222,\"payment_method\":\"cash_on_delivery\",\"item_count\":1,\"status\":\"pending\"}', NULL, '2025-07-22 23:46:54', '2025-07-22 23:46:54'),
+('a9a88719-f921-44e9-9b42-0a3bfe9bf7ba', 'rental_completed', 'App\\Models\\User', 5, '{\"title\":\"Rental Completed\",\"message\":\"The rental for \'Laravel\' has been marked as completed\",\"transaction_id\":2,\"rental_id\":8}', NULL, '2025-07-23 06:49:27', '2025-07-23 06:49:27'),
 ('b40b7965-406f-43f8-86f0-80b3dce27bfd', 'rental_request', 'App\\Models\\User', 2, '{\"title\":\"New Rental Request\",\"message\":\"Customer wants to rent your \'asdasdas\' via checkout\",\"transaction_id\":1,\"rental_id\":5,\"renter_id\":4,\"total_amount\":222,\"contact_number\":\"09123123123\",\"rent_duration\":\"123123\",\"payment_method\":\"cash_on_delivery\"}', NULL, '2025-07-22 23:46:54', '2025-07-22 23:46:54'),
 ('ba1ec9d7-305d-4e2e-8d57-31d61dd5a056', 'rental_approved', 'App\\Models\\User', 4, '{\"title\":\"Rental Request Approved!\",\"message\":\"Your rental request for \'asdasdas\' has been approved by CustomerOne\",\"transaction_id\":1,\"rental_id\":5}', NULL, '2025-07-22 23:47:28', '2025-07-22 23:47:28');
 
@@ -225,10 +229,14 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (9, 'App\\Models\\User', 3, 'auth_token', '11293a1507823668e1d54a320250b843f98ab2695718f1c738f33928add7f5e7', '[\"*\"]', '2025-07-22 23:16:18', NULL, '2025-07-22 23:14:45', '2025-07-22 23:16:18'),
 (10, 'App\\Models\\User', 3, 'auth_token', '9aa2c876fc0751dce4e2d92ff800d4fdfa541173b9f52198890c6c0fdc2d281a', '[\"*\"]', '2025-07-22 23:36:53', NULL, '2025-07-22 23:16:29', '2025-07-22 23:36:53'),
 (11, 'App\\Models\\User', 2, 'auth_token', '95416e8cd448ace1eba435477193c0ed86558145333429fbd51128b2afb609c4', '[\"*\"]', '2025-07-22 23:27:08', NULL, '2025-07-22 23:17:53', '2025-07-22 23:27:08'),
-(12, 'App\\Models\\User', 2, 'auth_token', '6231b8544d008e38b4b469dc8bc7fe9ab10206cee09e85a099949553df0d2864', '[\"*\"]', '2025-07-23 00:06:21', NULL, '2025-07-22 23:38:23', '2025-07-23 00:06:21'),
+(12, 'App\\Models\\User', 2, 'auth_token', '6231b8544d008e38b4b469dc8bc7fe9ab10206cee09e85a099949553df0d2864', '[\"*\"]', '2025-07-23 05:51:02', NULL, '2025-07-22 23:38:23', '2025-07-23 05:51:02'),
 (13, 'App\\Models\\User', 3, 'auth_token', '1247537533d2aec231de4efcc438430acfbdafb1fdf392080e9227bfa0bffc3c', '[\"*\"]', '2025-07-22 23:45:05', NULL, '2025-07-22 23:45:01', '2025-07-22 23:45:05'),
 (14, 'App\\Models\\User', 3, 'auth_token', '1d27f916d582c51f4db73ebe82bf0cab3a3424715ebf9a59aae12da2a81b5702', '[\"*\"]', '2025-07-22 23:46:18', NULL, '2025-07-22 23:45:27', '2025-07-22 23:46:18'),
-(15, 'App\\Models\\User', 4, 'auth_token', '6402b94d472f8f9ef1cf6923954a1e0bc6c1baf431ab498c325b8132055bcf61', '[\"*\"]', '2025-07-23 00:06:57', NULL, '2025-07-22 23:46:32', '2025-07-23 00:06:57');
+(15, 'App\\Models\\User', 4, 'auth_token', '6402b94d472f8f9ef1cf6923954a1e0bc6c1baf431ab498c325b8132055bcf61', '[\"*\"]', '2025-07-23 00:06:57', NULL, '2025-07-22 23:46:32', '2025-07-23 00:06:57'),
+(16, 'App\\Models\\User', 2, 'auth_token', 'b0e8c2730b15f93d8846375df47ed12f5b2f7f4df3e8c6100a62a0f52054ecca', '[\"*\"]', '2025-07-23 06:06:01', NULL, '2025-07-23 05:51:23', '2025-07-23 06:06:01'),
+(17, 'App\\Models\\User', 5, 'auth_token', '5dd945bec011c82a47e92cfaabf3165f86362b31109188e455a8b136a64d096a', '[\"*\"]', '2025-07-23 07:01:24', NULL, '2025-07-23 06:06:41', '2025-07-23 07:01:24'),
+(18, 'App\\Models\\User', 6, 'auth_token', 'f9e078ef9982cf0ad52594710da06cb235a189c43602ae0cfc6e072091140ba1', '[\"*\"]', '2025-07-23 06:49:31', NULL, '2025-07-23 06:42:59', '2025-07-23 06:49:31'),
+(19, 'App\\Models\\User', 3, 'auth_token', '49db73a11fd6e6d5ee8d5d983d3d5f37f397191620967b433f77cee3eb3f6d07', '[\"*\"]', '2025-07-23 06:54:58', NULL, '2025-07-23 06:50:46', '2025-07-23 06:54:58');
 
 -- --------------------------------------------------------
 
@@ -249,16 +257,6 @@ CREATE TABLE `rentals` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `rentals`
---
-
-INSERT INTO `rentals` (`id`, `user_id`, `title`, `description`, `price`, `location`, `image`, `status`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Supabase', 'asdasdasdasdasd', 100.00, 'Ketsaan', 'rentals/1753115200_687e6a40ebcf4_logo__5_.png', 'available', '2025-07-21 08:26:40', '2025-07-21 08:26:40'),
-(3, 2, 'asdasdasd', 'asdasd asdasd asdasd asdasd', 555.00, 'asdasdasdasd', 'rentals/1753116344_687e6eb87dded_Visual_Chart_Page_Iteration_2.png', 'available', '2025-07-21 08:45:44', '2025-07-21 08:45:44'),
-(4, 2, 'dasdasdasd', 'sdasd ssdasd ssdasd ssdasd ssdasd ssdasd ssdasd s', 123.00, 'asdasdasda', 'rentals/1753117480_687e732800893_happy_froakie_by_on_the_horizon27_dgpr1fx_fullview.jpg', 'available', '2025-07-21 09:04:40', '2025-07-21 09:04:40'),
-(5, 2, 'asdasdas', 'asdasdasdasdasdasdasdasdasdasdasdasd', 222.00, 'asdasdasd', NULL, 'rented', '2025-07-22 06:59:54', '2025-07-22 23:46:54');
-
 -- --------------------------------------------------------
 
 --
@@ -272,13 +270,6 @@ CREATE TABLE `rental_images` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `rental_images`
---
-
-INSERT INTO `rental_images` (`id`, `rental_id`, `image_path`, `created_at`, `updated_at`) VALUES
-(1, 5, 'rentals/1753196394_687fa76a55de0_logo.png', '2025-07-22 06:59:54', '2025-07-22 06:59:54');
 
 -- --------------------------------------------------------
 
@@ -312,6 +303,13 @@ CREATE TABLE `sessions` (
   `last_activity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `sessions`
+--
+
+INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
+('sCq8myLQAH6V84YTKKE5afjolkH6t7u9LT47RYat', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVFl1ZFBFeTNXdW5taU9VRjVIZEhsVFdHMUtOcUw1RW1oRlFzbUlCUCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDA6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9kZWJ1Zy1maXJzdC1yZW50YWwiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1753281992);
+
 -- --------------------------------------------------------
 
 --
@@ -335,13 +333,6 @@ CREATE TABLE `transactions` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `transactions`
---
-
-INSERT INTO `transactions` (`id`, `rental_id`, `renter_id`, `owner_id`, `status`, `start_date`, `end_date`, `total_amount`, `renter_message`, `owner_response`, `approved_at`, `rejected_at`, `completed_at`, `created_at`, `updated_at`) VALUES
-(1, 5, 4, 2, 'completed', '2025-07-24', '2025-07-30', 222.00, 'ASDASDAS DAS DASD ASD A', 'Rental request approved', '2025-07-22 23:47:28', NULL, '2025-07-22 23:49:12', '2025-07-22 23:46:54', '2025-07-22 23:49:12');
 
 -- --------------------------------------------------------
 
@@ -393,9 +384,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `role`, `verified`, `remember_token`, `created_at`, `updated_at`, `bio`, `contact_number`, `course_year`, `birthday`, `gender`, `social_link`, `profile_picture`, `location`, `website`, `skills`, `education`, `rating`, `total_ratings`, `is_online`, `last_seen`, `show_email`, `show_contact`, `show_social_link`, `profile_completion`, `verification_document`, `verification_document_type`, `verification_submitted_at`, `verification_reviewed_at`, `verification_status`, `verification_notes`, `verified_by`) VALUES
-(2, 'CustomerOne', 'customer1@gmail.com', NULL, '$2y$12$e55wkPXcDlNz0mB3tvDHp.U20syW6sqi3dIUL6M3/TgupP1cVwVAu', 'user', 1, NULL, '2025-07-21 08:07:15', '2025-07-22 23:37:24', 'asdasdasdasdasd', '09123123123', '3rd', '2025-07-01', 'Male', 'https://facebook.com/yourprofile', '/storage/profile_pictures/profile_2_1753198204.png', NULL, NULL, NULL, NULL, 0.0, 0, 0, NULL, 0, 1, 1, 100, 'http://localhost:8000/storage/verification_documents/1753253711_2ndtopcit.pdf', '2ndtopcit.pdf', '2025-07-22 22:55:11', '2025-07-22 23:37:24', 'approved', NULL, NULL),
-(3, 'Admin', 'admin@hulame.com', NULL, '$2y$12$XsWQtAs3ebKdQZhcq0kLE.nkY0frhcb0CEU5AL8Q5NGPxLlExcUIC', 'admin', 0, NULL, '2025-07-22 23:14:03', '2025-07-22 23:16:05', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0.0, 0, 0, NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, 'unverified', NULL, NULL),
-(4, 'Customer', 'customer@gmail.com', NULL, '$2y$12$kXhYYOlZM0SbIIYcjjMjvOmAiyqO.SgpuB9v0JuZMQc2mTmQ/exim', 'user', 0, NULL, '2025-07-22 23:46:32', '2025-07-23 00:06:57', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0.0, 0, 0, NULL, 0, 1, 1, 0, 'http://localhost:8000/storage/verification_documents/1753258017_ChatGPT Image Jun 18, 2025, 12_09_19 AM.png', 'ChatGPT Image Jun 18, 2025, 12_09_19 AM.png', '2025-07-23 00:06:57', NULL, 'pending', NULL, NULL);
+(3, 'Admin', 'admin@hulame.com', NULL, '$2y$12$XsWQtAs3ebKdQZhcq0kLE.nkY0frhcb0CEU5AL8Q5NGPxLlExcUIC', 'admin', 0, NULL, '2025-07-22 23:14:03', '2025-07-22 23:16:05', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0.0, 0, 0, NULL, 0, 1, 1, 0, NULL, NULL, NULL, NULL, 'unverified', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -553,19 +542,19 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `rentals`
 --
 ALTER TABLE `rentals`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `rental_images`
 --
 ALTER TABLE `rental_images`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `rental_messages`
@@ -577,13 +566,13 @@ ALTER TABLE `rental_messages`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables

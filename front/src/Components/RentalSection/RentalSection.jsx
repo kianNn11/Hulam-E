@@ -84,7 +84,8 @@ const RentalSection = () => {
       }
       return `http://localhost:8000/storage/rentals/${rental.image}`;
     }
-    return '/default-rental-image.jpg';
+    // Only use the default image if there is truly no uploaded image
+    return '';
   };
 
   return (

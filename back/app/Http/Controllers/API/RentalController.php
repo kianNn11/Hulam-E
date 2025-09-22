@@ -12,7 +12,8 @@ class RentalController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Rental::with('user:id,name,email');
+        // Always eager load 'images' relationship
+        $query = Rental::with(['user:id,name,email', 'images']);
         
         // Filter by user if requested
         if ($request->has('user_id')) {
@@ -107,15 +108,16 @@ class RentalController extends Controller
             'status' => 'available', // Default status
         ];
 
+        $mainImagePath = null;
+
         // Handle legacy single image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . uniqid() . '_' . preg_replace('/[^a-zA-Z0-9.]/', '_', $image->getClientOriginalName());
             $imagePath = $image->storeAs('rentals', $imageName, 'public');
+            $mainImagePath = $imagePath;
             $rentalData['image'] = $imagePath;
         }
-
-        $rental = Rental::create($rentalData);
 
         // Handle multiple images upload (only save the first image if present)
         if ($request->hasFile('images')) {
@@ -124,8 +126,20 @@ class RentalController extends Controller
                 $img = $images[0];
                 $imgName = time() . '_' . uniqid() . '_' . preg_replace('/[^a-zA-Z0-9.]/', '_', $img->getClientOriginalName());
                 $imgPath = $img->storeAs('rentals', $imgName, 'public');
-                $rental->images()->create(['image_path' => $imgPath]);
+                $mainImagePath = $imgPath;
             }
+        }
+
+        // Always set the main image path if available
+        if ($mainImagePath) {
+            $rentalData['image'] = $mainImagePath;
+        }
+
+        $rental = Rental::create($rentalData);
+
+        // Save the main image in rental_images table if available
+        if ($mainImagePath) {
+            $rental->images()->create(['image_path' => $mainImagePath]);
         }
 
         $rental->load('user:id,name,email', 'images');

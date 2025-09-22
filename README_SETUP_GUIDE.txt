@@ -10,7 +10,7 @@
 1. Create a new database named `hulame` in your MySQL/MariaDB server.
    - You can use phpMyAdmin, MySQL Workbench, or the command line:
      ```sh
-     mysql -u root -p
+     mysql -u root
      CREATE DATABASE hulame;
      exit;
      ```

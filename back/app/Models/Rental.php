@@ -25,6 +25,9 @@ class Rental extends Model
         'updated_at' => 'datetime',
     ];
 
+    // Always append image_url and images_url to model output
+    protected $appends = ['image_url', 'images_url'];
+
     public function user()
     {
         return $this->belongsTo(User::class);

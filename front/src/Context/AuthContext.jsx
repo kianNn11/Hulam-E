@@ -108,8 +108,8 @@ export const AuthProvider = ({ children }) => {
       
       console.log('AuthContext: Login successful for user:', user.id);
       localStorage.setItem('authToken', token);
-      localStorage.setItem('userData', JSON.stringify(user));
-      setUser(user);
+      // Fetch the latest user data from the backend and update context/localStorage
+      await refreshUserData();
       setIsLoggedIn(true);
       
       return { success: true, user };

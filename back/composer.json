@@ -2,7 +2,7 @@
     "name": "hulame/back",
     "autoload": {
         "psr-4": {
-            "Hulame\\Back\\": "src/"
+            "App\\": "app/"
         }
     },
     "require": {
