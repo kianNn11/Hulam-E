@@ -12,6 +12,8 @@ use App\Models\Notification;
 use App\Models\User;
 use App\Models\Rental;
 
+// Simple test routes only in local environment
+if (app()->environment('local')) {
 // Simple test route
 Route::get('/test-simple', function() {
     return response()->json(['message' => 'Simple test route working!']);
@@ -22,13 +24,6 @@ Route::get('/admin/direct-test', function() {
     return response()->json(['message' => 'Direct admin route working!']);
 });
 
-// Public routes - explicitly define with leading slashes to match frontend
-Route::group(['prefix' => 'auth'], function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-});
-
 // Test route to verify API is working
 Route::get('/test', function() {
     return response()->json(['message' => 'API is working!']);
@@ -37,6 +32,14 @@ Route::get('/test', function() {
 // Simple test for rentals
 Route::get('/test-rentals', function() {
     return response()->json(['message' => 'Rentals endpoint test!']);
+});
+}
+
+// Public routes - explicitly define with leading slashes to match frontend
+Route::group(['prefix' => 'auth'], function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
 
 // Public rental routes (viewing only)
@@ -398,356 +401,34 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
                 return response()->json(['error' => 'No document provided'], 422);
             }
             
-            // Update user verification fields
-            $user->update([
-                'verification_document' => $documentData,
-                'verification_document_type' => $verificationData['fileName'] ?? 'Certificate of Registration',
-                'verification_submitted_at' => now(),
-                'verification_status' => 'pending'
+            // Save verification data (without File storage for now)
+            // This would usually be stored in a dedicated verification table
+            \Log::info('User verification submitted', [
+                'user_id' => $user->id,
+                'verification_data' => $verificationData ? array_keys($verificationData) : null,
+                'document_provided' => $documentData ? true : false
             ]);
             
             return response()->json([
                 'success' => true,
-                'message' => 'Verification document submitted successfully. Your request is now pending admin review.',
-                'status' => 'pending'
+                'message' => 'Verification submitted successfully',
+                'data' => [
+                    'verificationData' => $verificationData,
+                    'document' => $documentData
+                ]
             ]);
-            
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'error' => 'Validation failed',
-                'details' => $e->errors()
-            ], 422);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Student verification error:', [
-                'error' => $e->getMessage(),
-                'user_id' => $request->user() ? $request->user()->id : 'unknown',
-                'trace' => $e->getTraceAsString()
-            ]);
-            
-            return response()->json([
-                'error' => 'Failed to submit verification request. Please try again.',
-                'message' => $e->getMessage()
-            ], 500);
-        }
-    });
-    
-    // Rentals - protected operations
-    Route::post('/rentals', [RentalController::class, 'store']);
-    Route::put('/rentals/{rental}', [RentalController::class, 'update']);
-    Route::delete('/rentals/{rental}', [RentalController::class, 'destroy']);
-
-    // Transaction Management APIs
-    // Get user transactions (as renter or owner)
-    Route::get('/transactions', function(Request $request) {
-        try {
-            $user = $request->user();
-            $query = Transaction::with(['rental', 'renter:id,name,email', 'owner:id,name,email']);
-            
-            // Filter by role
-            if ($request->has('role')) {
-                if ($request->role === 'renter') {
-                    $query->where('renter_id', $user->id);
-                } elseif ($request->role === 'owner') {
-                    $query->where('owner_id', $user->id);
-                }
-            } else {
-                $query->forUser($user->id);
-            }
-            
-            // Filter by status
-            if ($request->has('status') && $request->status !== 'all') {
-                $query->where('status', $request->status);
-            }
-            
-            $transactions = $query->orderBy('created_at', 'desc')->paginate(10);
-            
-            return response()->json($transactions);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to fetch transactions: ' . $e->getMessage()], 500);
+            \Log::error('Student verification error: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while processing verification'], 500);
         }
     });
 
-    // Get single transaction
-    Route::get('/transactions/{transaction}', function(\App\Models\Transaction $transaction, Request $request) {
-        $user = $request->user();
-        
-        // Check if user is involved in this transaction
-        if ($transaction->renter_id !== $user->id && $transaction->owner_id !== $user->id) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-        
-        $transaction->load(['rental', 'renter:id,name,email', 'owner:id,name,email']);
-        return response()->json(['data' => $transaction]);
-    });
-
-    // Approve transaction (owner only)
-    Route::post('/transactions/{transaction}/approve', function(\App\Models\Transaction $transaction, Request $request) {
-        $user = $request->user();
-        
-        // Check if user is the owner
-        if ($transaction->owner_id !== $user->id) {
-            return response()->json(['error' => 'Only the owner can approve transactions'], 403);
-        }
-        
-        if ($transaction->status !== 'pending') {
-            return response()->json(['error' => 'Transaction is not pending'], 400);
-        }
-        
-        $validated = $request->validate([
-            'response' => 'nullable|string|max:500'
-        ]);
-        
-        $transaction->update([
-            'status' => 'approved',
-            'approved_at' => now(),
-            'owner_response' => $validated['response'] ?? null
-        ]);
-        
-        // Create notification for renter
-        Notification::createForUser(
-            $transaction->renter_id,
-            'rental_approved',
-            'Rental Request Approved!',
-            "Your rental request for '{$transaction->rental->title}' has been approved by {$user->name}",
-            [
-                'transaction_id' => $transaction->id,
-                'rental_id' => $transaction->rental_id
-            ]
-        );
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaction approved successfully',
-            'data' => $transaction->fresh(['rental', 'renter:id,name,email'])
-        ]);
-    });
-
-    // Reject transaction (owner only)
-    Route::post('/transactions/{transaction}/reject', function(\App\Models\Transaction $transaction, Request $request) {
-        $user = $request->user();
-        
-        // Check if user is the owner
-        if ($transaction->owner_id !== $user->id) {
-            return response()->json(['error' => 'Only the owner can reject transactions'], 403);
-        }
-        
-        if ($transaction->status !== 'pending') {
-            return response()->json(['error' => 'Transaction is not pending'], 400);
-        }
-        
-        $validated = $request->validate([
-            'response' => 'required|string|max:500'
-        ]);
-        
-        $transaction->update([
-            'status' => 'rejected',
-            'rejected_at' => now(),
-            'owner_response' => $validated['response']
-        ]);
-        
-        // Ensure rental remains available when transaction is rejected
-        $rental = $transaction->rental;
-        if ($rental && $rental->status !== 'available') {
-            $rental->update(['status' => 'available']);
-        }
-        
-        // Create notification for renter
-        Notification::createForUser(
-            $transaction->renter_id,
-            'rental_rejected',
-            'Rental Request Rejected',
-            "Your rental request for '{$transaction->rental->title}' has been rejected by {$user->name}",
-            [
-                'transaction_id' => $transaction->id,
-                'rental_id' => $transaction->rental_id,
-                'reason' => $validated['response']
-            ]
-        );
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaction rejected',
-            'data' => $transaction->fresh(['rental', 'renter:id,name,email'])
-        ]);
-    });
-
-    // Complete transaction (both parties can mark as completed)
-    Route::post('/transactions/{transaction}/complete', function(\App\Models\Transaction $transaction, Request $request) {
-        $user = $request->user();
-        
-        // Check if user is involved in this transaction
-        if ($transaction->renter_id !== $user->id && $transaction->owner_id !== $user->id) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-        
-        if ($transaction->status !== 'approved') {
-            return response()->json(['error' => 'Transaction must be approved first'], 400);
-        }
-        
-        $transaction->update([
-            'status' => 'completed',
-            'completed_at' => now()
-        ]);
-        
-        // Update rental status to 'rented' when transaction is completed
-        $rental = $transaction->rental;
-        if ($rental) {
-            $rental->update(['status' => 'rented']);
-        }
-        
-        // Create notifications for both parties
-        $otherUserId = $transaction->renter_id === $user->id ? $transaction->owner_id : $transaction->renter_id;
-        
-        Notification::createForUser(
-            $otherUserId,
-            'rental_completed',
-            'Rental Completed',
-            "The rental for '{$transaction->rental->title}' has been marked as completed",
-            [
-                'transaction_id' => $transaction->id,
-                'rental_id' => $transaction->rental_id
-            ]
-        );
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Transaction marked as completed',
-            'data' => $transaction->fresh(['rental', 'renter:id,name,email', 'owner:id,name,email'])
-        ]);
-    });
-
-    // Get user earnings data
-    Route::get('/users/{user}/earnings', function(User $user, Request $request) {
-        try {
-            $authUser = $request->user();
-            
-            // Check if user can access this earnings data
-            if ($authUser->id !== $user->id && $authUser->role !== 'admin') {
-                return response()->json(['error' => 'Unauthorized'], 403);
-            }
-            
-            // Get all transactions where user is the owner (earns money)
-            $transactions = Transaction::with(['rental:id,title,price'])
-                ->where('owner_id', $user->id)
-                ->orderBy('created_at', 'desc')
-                ->get();
-            
-            // Get all transactions where user is the renter (borrowed items)
-            $borrowedTransactions = Transaction::with(['rental:id,title,price,image', 'owner:id,name'])
-                ->where('renter_id', $user->id)
-                ->orderBy('created_at', 'desc')
-                ->get();
-            
-            // Calculate earnings statistics
-            $totalEarnings = $transactions->where('status', 'completed')->sum('total_amount');
-            $pendingEarnings = $transactions->whereIn('status', ['pending', 'approved'])->sum('total_amount');
-            $availableBalance = $totalEarnings;
-            
-            // Get rental statistics
-            $totalRentals = $user->rentals()->count();
-            $activeRentals = $user->rentals()->where('status', 'rented')->count();
-            
-            // Calculate borrowed items statistics
-            $totalBorrowed = $borrowedTransactions->count();
-            $activeBorrowed = $borrowedTransactions->whereIn('status', ['approved', 'completed'])->count();
-            $totalSpent = $borrowedTransactions->where('status', 'completed')->sum('total_amount');
-            
-            // Generate monthly breakdown (last 12 months)
-            $monthlyBreakdown = [];
-            for ($i = 11; $i >= 0; $i--) {
-                $date = now()->subMonths($i);
-                $monthName = $date->format('M');
-                $monthEarnings = $transactions
-                    ->whereIn('status', ['completed', 'approved', 'pending'])
-                    ->filter(function($transaction) use ($date) {
-                        return $transaction->created_at->isSameMonth($date);
-                    })
-                    ->sum('total_amount');
-                
-                $monthlyBreakdown[] = [
-                    'month' => $monthName,
-                    'amount' => $monthEarnings
-                ];
-            }
-            
-            // Format transactions for frontend - include all transactions
-            $formattedTransactions = $transactions->map(function($transaction) {
-                $statusDescriptions = [
-                    'pending' => 'Transaction pending approval',
-                    'approved' => 'Transaction approved - awaiting completion',
-                    'completed' => 'Rental payment received',
-                    'rejected' => 'Transaction rejected',
-                    'cancelled' => 'Transaction cancelled'
-                ];
-                
-                return [
-                    'id' => $transaction->id,
-                    'date' => $transaction->created_at->toISOString(),
-                    'amount' => $transaction->total_amount,
-                    'type' => $transaction->status === 'completed' ? 'rental_payment' : 
-                             ($transaction->status === 'approved' ? 'approved' : $transaction->status),
-                    'status' => $transaction->status,
-                    'description' => $statusDescriptions[$transaction->status] ?? 'Unknown status',
-                    'rentalId' => $transaction->rental_id,
-                    'rentalTitle' => $transaction->rental->title ?? 'Unknown'
-                ];
-            });
-
-            // Format borrowed items for frontend
-            $formattedBorrowedItems = $borrowedTransactions->map(function($transaction) {
-                $statusDescriptions = [
-                    'pending' => 'Rental request pending',
-                    'approved' => 'Rental approved - active',
-                    'completed' => 'Rental completed',
-                    'rejected' => 'Rental request rejected',
-                    'cancelled' => 'Rental cancelled'
-                ];
-                
-                return [
-                    'id' => $transaction->id,
-                    'date' => $transaction->created_at->toISOString(),
-                    'amount' => $transaction->total_amount,
-                    'status' => $transaction->status,
-                    'description' => $statusDescriptions[$transaction->status] ?? 'Unknown status',
-                    'rentalId' => $transaction->rental_id,
-                    'rentalTitle' => $transaction->rental->title ?? 'Unknown',
-                    'rentalImage' => $transaction->rental->image ?? null,
-                    'ownerName' => $transaction->owner->name ?? 'Unknown',
-                    'startDate' => $transaction->start_date->toISOString(),
-                    'endDate' => $transaction->end_date->toISOString()
-                ];
-            });
-            
-            return response()->json([
-                'totalEarnings' => $totalEarnings,
-                'pendingPayouts' => $pendingEarnings,
-                'availableBalance' => $availableBalance,
-                'transactionCount' => $transactions->count(),
-                'totalRentals' => $totalRentals,
-                'activeRentals' => $activeRentals,
-                'transactions' => $formattedTransactions,
-                'borrowedItems' => $formattedBorrowedItems,
-                'borrowedStats' => [
-                    'totalBorrowed' => $totalBorrowed,
-                    'activeBorrowed' => $activeBorrowed,
-                    'totalSpent' => $totalSpent
-                ],
-                'monthlyBreakdown' => $monthlyBreakdown
-            ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Failed to fetch earnings data: ' . $e->getMessage()
-            ], 500);
-        }
-    });
-
-    // Get current user's earnings (convenience endpoint)
-    Route::get('/user/earnings', function(Request $request) {
-        $user = $request->user();
-        return app('Illuminate\Routing\Router')->dispatch(
-            $request->create("/api/users/{$user->id}/earnings", 'GET')
-        );
+    // Admin routes within protected routes
+    Route::group(['prefix' => 'admin', 'middleware' => 'auth:sanctum'], function () {
+        Route::post('/suspend-user', [AdminController::class, 'suspendUser']);
+        Route::post('/deactivate-user', [AdminController::class, 'deactivateUser']);
+        Route::post('/unsuspend-user', [AdminController::class, 'unsuspendUser']);
+        Route::get('/notifications', [AdminController::class, 'getNotifications']);
     });
 });
 
